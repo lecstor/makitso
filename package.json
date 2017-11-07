@@ -10,9 +10,7 @@
   },
   "dependencies": {
     "commander": "^2.11.0",
-    "eslint-config-standard-jsdoc": "^0.3.2",
-    "inquirer": "^3.3.0",
-    "inquirer-command-prompt": "^0.0.6"
+    "keytar": "^4.0.5"
   },
   "devDependencies": {
     "eslint": "^4.9.0",

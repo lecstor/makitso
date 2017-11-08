@@ -9,7 +9,6 @@ function secretKey(service, account) {
 }
 
 async function setPassword(service, account, password) {
-  console.log("SETPASSWORD");
   const key = secretKey(service, account);
   mockKeychain[key] = password;
 }

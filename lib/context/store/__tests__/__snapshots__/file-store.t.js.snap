@@ -1,0 +1,29 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`File Store provides delete 1`] = `
+Object {
+  "github": Object {
+    "username": Object {
+      "default": "lecstor",
+    },
+  },
+  "twitter": Object {
+    "username": Object {},
+  },
+}
+`;
+
+exports[`File Store provides set 1`] = `
+Object {
+  "github": Object {
+    "username": Object {
+      "default": "lecstor",
+    },
+  },
+  "twitter": Object {
+    "username": Object {
+      "default": "lecstor",
+    },
+  },
+}
+`;

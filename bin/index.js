@@ -1,7 +1,6 @@
 #! /usr/bin/env node
+const CommandIt = require("../");
 
-const cmd = require("../lib/program");
-const Context = require("../lib/context");
 const Session = require("../lib/context/store/memory-store");
 
 function setValue(context, prop, value) {
@@ -43,11 +42,6 @@ const schema = {
   }
 };
 
-const session = Session();
-const context = Context({ schema, stores: { session } });
-// context.promptPrefix = "Hello";
-// context.prompt = "World";
-
 const commands = {
   set: {
     command: "set <prop> <value>",
@@ -61,8 +55,8 @@ const commands = {
   },
   dump: {
     description: "Dump the store",
-    action: async () => {
-      console.log(JSON.stringify(await session.read(), null, 2));
+    action: async context => {
+      console.log(JSON.stringify(await context.stores.session.read(), null, 2));
     }
   },
   debugOn: {
@@ -91,4 +85,9 @@ const options = {
     prefix: "Cmd"
   }
 };
-cmd(context, commands, options);
+
+const stores = { session: Session() };
+
+const cmdIt = CommandIt({ options });
+cmdIt.registerPlugins({ schema, stores, commands });
+cmdIt.start();

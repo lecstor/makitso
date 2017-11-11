@@ -12,6 +12,8 @@ function getValue(context, prop) {
   return context.get(prop).then(console.log);
 }
 
+const stores = { session: Session() };
+
 const schema = {
   twitter: {
     username: {
@@ -56,7 +58,7 @@ const commands = {
   dump: {
     description: "Dump the store",
     action: async context => {
-      console.log(JSON.stringify(await context.stores.session.read(), null, 2));
+      console.log(JSON.stringify(await stores.session.read(), null, 2));
     }
   },
   debugOn: {
@@ -85,8 +87,6 @@ const options = {
     prefix: "Cmd"
   }
 };
-
-const stores = { session: Session() };
 
 const cmdIt = CommandIt({ options });
 cmdIt.registerPlugins({ schema, stores, commands });

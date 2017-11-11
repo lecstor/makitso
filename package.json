@@ -9,6 +9,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@lecstor/app-error": "^0.0.2",
     "commander": "^2.11.0",
     "inquirer": "^3.3.0",
     "inquirer-command-prompt": "^0.0.6",
@@ -28,7 +29,7 @@
     "prettier": "^1.7.4"
   },
   "bin": {
-    "cmdit": "./bin/index.js"
+    "cmd": "./bin/index.js"
   },
   "engines": {
     "node": ">=8.9"

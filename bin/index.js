@@ -1,4 +1,7 @@
 #! /usr/bin/env node
+
+"use strict";
+
 const CommandIt = require("../");
 
 const Session = require("../lib/context/store/memory-store");
@@ -83,8 +86,7 @@ const options = {
     description: "CommandIt - Interactive Commandline App Creator"
   },
   prompt: {
-    message: "It",
-    prefix: "Cmd"
+    message: "CmdIt"
   }
 };
 

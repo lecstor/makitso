@@ -2,9 +2,10 @@
 
 "use strict";
 
-const CommandIt = require("../");
+const path = require("path");
+const os = require("os");
 
-const Session = require("../lib/context/store/memory-store");
+const CommandIt = require("../");
 
 function setValue(context, prop, value) {
   context.debug && console.log(context, prop, value);
@@ -15,12 +16,17 @@ function getValue(context, prop) {
   return context.get(prop).then(console.log);
 }
 
-const stores = { session: Session() };
+const DefaultStores = CommandIt.DefaultStores;
+const appName = path.basename(process.argv[1]);
+
+const stores = DefaultStores({
+  file: path.join(os.homedir(), `/.${appName}.json`)
+});
 
 const schema = {
   twitter: {
     username: {
-      store: "session",
+      store: "file",
       prompt: {
         type: "input",
         name: "username",
@@ -30,7 +36,7 @@ const schema = {
   },
   tunnnelblick: {
     password: {
-      store: "keychain",
+      store: "secure",
       storeOptions: {
         service: "commandit-tunnelblick-{variant}",
         account: "password"
@@ -59,9 +65,10 @@ const commands = {
     action: getValue
   },
   dump: {
+    command: "dump <store>",
     description: "Dump the store",
-    action: async context => {
-      console.log(JSON.stringify(await stores.session.read(), null, 2));
+    action: async (context, store) => {
+      console.log(JSON.stringify(await context.read(store), null, 2));
     }
   },
   debugOn: {
@@ -90,6 +97,8 @@ const options = {
   }
 };
 
+const plugin = { schema, commands };
+
 const cmdIt = CommandIt({ options });
-cmdIt.registerPlugins({ schema, stores, commands });
+cmdIt.registerPlugins(stores, plugin);
 cmdIt.start();

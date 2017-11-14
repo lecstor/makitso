@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@lecstor/app-error": "^0.0.2",
+    "chalk": "^2.3.0",
     "commander": "^2.11.0",
     "inquirer": "^3.3.0",
     "inquirer-command-prompt": "^0.0.6",

@@ -4,39 +4,52 @@ const _merge = require("lodash/merge");
 
 const cmd = require("./lib/program");
 const Context = require("./lib/context");
+const DefaultStores = require("./lib/plugins/default-stores");
 
 /**
  * Register a plugin
  *
  * @param {Object} args - args
- * @param {Object} args.schema - registered schema
- * @param {Object} args.stores - registered stores
- * @param {Object} args.commands - registered commands
+ * @param {Object} args.pluginSet - registered plugins
+ * @param {Object} args.pluginSet.schema - schema
+ * @param {Object} args.pluginSet.stores - stores
+ * @param {Object} args.pluginSet.commands - commands
  * @param {Object} args.plugin - plugin to register
- * @param {Object} args.plugin.schema - schema to register
- * @param {Object} args.plugin.stores - stores to register
- * @param {Object} args.plugin.commands - commands to register
- * @returns {Object} context - the new context
+ * @param {Object} args.plugin.schema - schema
+ * @param {Object} args.plugin.stores - stores
+ * @param {Object} args.plugin.commands - commands
+ * @returns {Object} the updated pluginSet
  */
 function registerPlugin(args) {
-  const { schema, stores, commands, plugin } = args;
-  _merge(schema, plugin.schema);
-  _merge(stores, plugin.stores);
-  _merge(commands, plugin.commands);
-  return { schema, stores, commands };
+  const { pluginSet, plugin } = args;
+  if (plugin.schema) {
+    _merge(pluginSet.schema, plugin.schema);
+  }
+  if (plugin.stores) {
+    _merge(pluginSet.stores, plugin.stores);
+  }
+  if (plugin.commands) {
+    _merge(pluginSet.commands, plugin.commands);
+  }
+  return pluginSet;
 }
 
 /**
  *
  * @param {Object} args - args
- * @param {Object} args.options - the plugin's context schema
+ * @param {Object} args.options -
+ * @param {Object} args.options.app - app options
+ * @param {String} args.options.app.description - app description
+ * @param {String} args.options.app.version - app version
+ * @param {Object} args.options.prompt - prompt options
+ * @param {String} [args.options.prompt.message="CommandIt>"] - text to display as the prompt
+ * @param {Object} args.options.fileStore - file store options
+ * @param {String} [args.options.fileStore.file="~/.commandit/file-store.json"] - location of the file store
  * @returns {Object} context
  */
 function CommandIt(args) {
   const { options } = args;
-  let schema = {};
-  let stores = {};
-  let commands = {};
+  let pluginSet = { schema: {}, stores: {}, commands: {} };
 
   return {
     /**
@@ -47,22 +60,11 @@ function CommandIt(args) {
      */
     registerPlugins(plugins) {
       if (!Array.isArray(plugins)) {
-        ({ schema, stores, commands } = registerPlugin({
-          schema,
-          stores,
-          commands,
-          plugin: plugins
-        }));
+        pluginSet = registerPlugin({ pluginSet, plugin: plugins });
       } else {
-        plugins.forEach(
-          plugin =>
-            ({ schema, stores, commands } = registerPlugin({
-              schema,
-              stores,
-              commands,
-              plugin
-            }))
-        );
+        plugins.forEach(plugin => {
+          pluginSet = registerPlugin({ pluginSet, plugin });
+        });
       }
     },
     /**
@@ -70,6 +72,7 @@ function CommandIt(args) {
      * @returns {void}
      */
     start() {
+      const { schema, stores, commands } = pluginSet;
       const context = Context({ schema, stores });
       cmd(context, commands, options);
     }
@@ -77,3 +80,4 @@ function CommandIt(args) {
 }
 
 module.exports = CommandIt;
+CommandIt.DefaultStores = DefaultStores;

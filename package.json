@@ -1,7 +1,7 @@
 {
-  "name": "command-it",
+  "name": "makitso",
   "version": "0.0.1",
-  "description": "for building interactive commandline apps",
+  "description": "Composable interactive commandline app framework",
   "main": "index.js",
   "author": "jason@lecstor.com",
   "license": "MIT",
@@ -20,7 +20,6 @@
     "eslint": "^4.9.0",
     "eslint-config-prettier": "^2.6.0",
     "eslint-config-standard": "^10.2.1",
-    "eslint-config-standard-jsdoc": "^0.3.2",
     "eslint-plugin-import": "^2.8.0",
     "eslint-plugin-node": "^5.2.0",
     "eslint-plugin-prettier": "^2.3.1",
@@ -30,7 +29,7 @@
     "prettier": "^1.7.4"
   },
   "bin": {
-    "cmd": "./bin/index.js"
+    "makitso": "./bin/index.js"
   },
   "engines": {
     "node": ">=8.9"

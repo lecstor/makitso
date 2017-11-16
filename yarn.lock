@@ -534,12 +534,6 @@ commander@^2.11.0:
   version "2.11.0"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.11.0.tgz#157152fd1e7a6c8d98a5b715cf376df928004563"
 
-comment-parser@^0.4.2:
-  version "0.4.2"
-  resolved "https://registry.yarnpkg.com/comment-parser/-/comment-parser-0.4.2.tgz#fa5a3f78013070114866dc7b8e9cf317a9635f74"
-  dependencies:
-    readable-stream "^2.0.4"
-
 concat-map@0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/concat-map/-/concat-map-0.0.1.tgz#d8a96bd77fd68df7793a73036a3ba0d5405d477b"
@@ -733,12 +727,6 @@ eslint-config-prettier@^2.6.0:
   dependencies:
     get-stdin "^5.0.1"
 
-eslint-config-standard-jsdoc@^0.3.2:
-  version "0.3.2"
-  resolved "https://registry.yarnpkg.com/eslint-config-standard-jsdoc/-/eslint-config-standard-jsdoc-0.3.2.tgz#883588141c0fe17bf05629ccfed6b411d7ce72fd"
-  dependencies:
-    eslint-plugin-jsdoc ">=1.1.0"
-
 eslint-config-standard@^10.2.1:
   version "10.2.1"
   resolved "https://registry.yarnpkg.com/eslint-config-standard/-/eslint-config-standard-10.2.1.tgz#c061e4d066f379dc17cd562c64e819b4dd454591"
@@ -771,13 +759,6 @@ eslint-plugin-import@^2.8.0:
     lodash.cond "^4.3.0"
     minimatch "^3.0.3"
     read-pkg-up "^2.0.0"
-
-eslint-plugin-jsdoc@>=1.1.0:
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-jsdoc/-/eslint-plugin-jsdoc-3.2.0.tgz#16c41575745601f9b7d873a4b8fe6f54b9eccec2"
-  dependencies:
-    comment-parser "^0.4.2"
-    lodash "^4.17.4"
 
 eslint-plugin-node@^5.2.0:
   version "5.2.1"
@@ -2457,7 +2438,7 @@ read-pkg@^2.0.0:
     normalize-package-data "^2.3.2"
     path-type "^2.0.0"
 
-readable-stream@^2.0.4, readable-stream@^2.0.6, readable-stream@^2.1.4, readable-stream@^2.2.2:
+readable-stream@^2.0.6, readable-stream@^2.1.4, readable-stream@^2.2.2:
   version "2.3.3"
   resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-2.3.3.tgz#368f2512d79f9d46fdfc71349ae7878bbc1eb95c"
   dependencies:

@@ -1,10 +1,14 @@
 "use strict";
 
 const _merge = require("lodash/merge");
+const _flatten = require("lodash/flatten");
 
 const cmd = require("./lib/program");
 const Context = require("./lib/context");
 const DefaultStores = require("./lib/plugins/default-stores");
+const FileStore = require("./lib/plugins/store/file-store");
+const KeychainStore = require("./lib/plugins/store/keychain-store");
+const MemoryStore = require("./lib/plugins/store/memory-store");
 
 /**
  * Register a plugin
@@ -58,14 +62,12 @@ function CommandIt(args) {
      * @param {Object|Array} plugins - plugins to register
      * @returns {void}
      */
-    registerPlugins(plugins) {
-      if (!Array.isArray(plugins)) {
-        pluginSet = registerPlugin({ pluginSet, plugin: plugins });
-      } else {
-        plugins.forEach(plugin => {
-          pluginSet = registerPlugin({ pluginSet, plugin });
-        });
-      }
+    registerPlugins(...args) {
+      return Promise.all(_flatten(args)).then(plugins =>
+        plugins.forEach(
+          plugin => (pluginSet = registerPlugin({ pluginSet, plugin }))
+        )
+      );
     },
     /**
      * Start the app
@@ -81,3 +83,6 @@ function CommandIt(args) {
 
 module.exports = CommandIt;
 CommandIt.DefaultStores = DefaultStores;
+CommandIt.MemoryStore = MemoryStore;
+CommandIt.FileStore = FileStore;
+CommandIt.KeychainStore = KeychainStore;

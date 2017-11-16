@@ -6,83 +6,30 @@ const path = require("path");
 const os = require("os");
 
 const CommandIt = require("../");
+const tunnelPlugin = require("makitso-tunnelblick2fa-plugin").plugin();
+const developPlugin = require("makitso-develop-plugin").plugin();
 
-function setValue(context, prop, value) {
-  context.debug && console.log(context, prop, value);
-  return context.set(prop, value);
-}
-
-function getValue(context, prop) {
-  return context.get(prop).then(console.log);
-}
-
-const DefaultStores = CommandIt.DefaultStores;
-const appName = path.basename(process.argv[1]);
-
-const stores = DefaultStores({
-  file: path.join(os.homedir(), `/.${appName}.json`)
-});
-
-const schema = {
-  twitter: {
-    username: {
-      store: "file",
-      prompt: {
-        type: "input",
-        name: "username",
-        message: `Enter your Twitter username ...`
+const localPlugin = {
+  schema: {
+    my: {
+      name: {
+        store: "file",
+        prompt: {
+          type: "input",
+          name: "name",
+          message: `Enter your {variant} name ...`
+        }
       }
     }
   },
-  tunnnelblick: {
-    password: {
-      store: "secure",
-      storeOptions: {
-        service: "commandit-tunnelblick-{variant}",
-        account: "password"
-      },
-      prompt: {
-        type: "password",
-        name: "password",
-        message: `Enter your VPN password ...`
+  commands: {
+    printName: {
+      description: "Print your name",
+      action: async context => {
+        const firstName = await context.get("my.name.first");
+        const lastName = await context.get("my.name.last");
+        console.log(`${firstName} ${lastName}`);
       }
-      // secure: true
-      // promptWithDefault: true
-      // default: "lecstor"
-    }
-  }
-};
-
-const commands = {
-  set: {
-    command: "set <prop> <value>",
-    description: "Set a context value",
-    action: setValue
-  },
-  get: {
-    command: "get <prop>",
-    description: "Get a context value",
-    action: getValue
-  },
-  dump: {
-    command: "dump <store>",
-    description: "Dump the store",
-    action: async (context, store) => {
-      console.log(JSON.stringify(await context.read(store), null, 2));
-    }
-  },
-  debugOn: {
-    description: "Turn on debugging",
-    action: async context => {
-      context.debug = true;
-      console.log("Debug On");
-    }
-  },
-  debugOff: {
-    description: "Turn off debugging",
-    action: async context => {
-      context.debug = false;
-      console.log("Debug Off");
     }
   }
 };
@@ -90,15 +37,26 @@ const commands = {
 const options = {
   app: {
     version: "0.0.1",
-    description: "CommandIt - Interactive Commandline App Creator"
+    description:
+      "Makitso - A Framework for building composable interactive commandline apps"
   },
   prompt: {
-    message: "CmdIt"
+    message: "Makitso>"
   }
 };
 
-const plugin = { schema, commands };
-
+const DefaultStores = CommandIt.DefaultStores;
+const appName = path.basename(process.argv[1]);
 const cmdIt = CommandIt({ options });
-cmdIt.registerPlugins(stores, plugin);
-cmdIt.start();
+
+cmdIt
+  .registerPlugins(
+    DefaultStores({
+      file: { path: path.join(os.homedir(), `/.${appName}.json`), data: {} },
+      session: { data: {} }
+    }),
+    localPlugin,
+    tunnelPlugin,
+    developPlugin
+  )
+  .then(() => cmdIt.start());

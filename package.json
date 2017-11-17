@@ -1,8 +1,7 @@
 {
   "name": "makitso",
   "version": "0.0.1",
-  "description":
-    "A Framework for building composable interactive commandline apps",
+  "description": "A Framework for building composable interactive commandline apps",
   "main": "index.js",
   "author": "jason@lecstor.com",
   "license": "MIT",
@@ -19,7 +18,9 @@
     "commander": "^2.11.0",
     "inquirer": "^3.3.0",
     "inquirer-command-prompt": "^0.0.6",
-    "keytar": "^4.0.5"
+    "keytar": "^4.0.5",
+    "makitso-develop-plugin": "^1.0.0",
+    "makitso-tunnelblick2fa-plugin": "^1.0.1"
   },
   "devDependencies": {
     "eslint": "^4.9.0",

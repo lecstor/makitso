@@ -6,6 +6,10 @@
   "main": "index.js",
   "author": "jason@lecstor.com",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lecstor/makitso.git"
+  },
   "scripts": {
     "test": "jest"
   },

@@ -76,7 +76,7 @@ function CommandIt(args) {
     start() {
       const { schema, stores, commands } = pluginSet;
       const context = Context({ schema, stores });
-      cmd(context, commands, options);
+      cmd(context, commands, options).catch(console.error);
     }
   };
 }

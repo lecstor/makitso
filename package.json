@@ -20,7 +20,8 @@
     "inquirer-command-prompt": "^0.0.6",
     "keytar": "^4.0.5",
     "makitso-develop-plugin": "^1.0.0",
-    "makitso-tunnelblick2fa-plugin": "^1.0.1"
+    "makitso-tunnelblick2fa-plugin": "^1.0.1",
+    "yargs": "^10.0.3"
   },
   "devDependencies": {
     "eslint": "^4.9.0",

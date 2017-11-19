@@ -9,7 +9,7 @@ connectors.
 
 The schema defines context properties, the storage to use, and a prompt for
 collecting the value of the property.
-```
+```js
 {
   schema: {
     my: {
@@ -26,15 +26,28 @@ collecting the value of the property.
 }
 ```
 
-Commands define the command format, help description and an action function.
-Action functions recieve the app context and arguments from the commandline.
-```
+Commands define the command arguments format, help description and an action
+function.
+
+Commands can be grouped using the config.command property for all
+commands in the plugin, and with object nesting within the plugin. Autocomplete
+will be supported for each of the command levels.
+
+Commands can also provide a "choices" property which will allow autocomplete
+to provide available options for the command.
+
+Command action functions receive a context instance which gives access to
+properties handled by other plugins. If a required property has not already
+been set then the plugin which is handling it will prompt the user to enter it
+and then return the entered value.
+
+```js
 {
   commands: {
     set: {
-      command: "set <prop> <value>",
+      args: "prop value",
       description: "Set a context value",
-      action: (context, prop, value) => context.set(prop, value)
+      action: (context, { prop, value }) => context.set(prop, value)
     },
     printName: {
       description: "Print your name",
@@ -43,27 +56,47 @@ Action functions recieve the app context and arguments from the commandline.
         const lastName = await context.get("my.name.last");
         console.log(`${firstName} ${lastName}`);
       }
-    }
+    },
+    debug: {
+      on: {
+        description: "Turn on debugging",
+        action: async context => console.log("Debug On")
+      },
+      off: {
+        description: "Turn off debugging",
+        action: async context => console.log("Debug Off");
+      }
+    },
+    dump: {
+      store: {
+        args: "storeId",
+        description: "Dump the store",
+        choices: {
+          storeId: ({ context }) => context.listStores()
+        },
+        action: async (context, { storeId }) => {
+          const store = await context.getStore(storeId);
+          console.log(JSON.stringify(await store.read(), null, 2));
+        }
+      }
+    },
+  },
+  config: {
+    command: "demo"
   }
 }
 ```
 Usage
 ```
 $ makitso
-? Makitso> printName
+? Makitso> demo printName
 ? Enter your first name ... Jason
 ? Enter your last name ... Galea
 Jason Galea
-? Makitso> printName
+? Makitso> demo printName
 Jason Galea
 ? Makitso>
 ```
-
-Command actions are provided with a context which can be used to access
-properties such as usernames, passwords, urls, or anything else they need,
-provided there is a plugin which handles those properties. If the required
-values have not already been set then the handler plugin will ask the user
-to enter them and then return them to the command.
 
 See the [builtin app](./bin/index.js) for an example or install this module
 globally and try it for yourself.
@@ -73,9 +106,8 @@ $ yarn global add makitso
 $ makitso
 ```
 
-Makitso uses [commander](https://github.com/tj/commander.js),
-[inquirer](https://github.com/SBoudrias/Inquirer.js/),
-[inquirer-command-promt](https://github.com/sullof/inquirer-command-prompt),
-and some custom plumbing to hook them up to session (memory), file, and secure
-(keychain) context storage.
+Makitso uses [inquirer](https://github.com/SBoudrias/Inquirer.js/),
+and a modified version of [inquirer-command-promt](https://github.com/sullof/inquirer-command-prompt),
+and some custom plumbing to hook them up to a central context module backed by
+session (memory), file, and secure (keychain) context storage.
 

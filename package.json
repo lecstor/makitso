@@ -16,10 +16,10 @@
     "@lecstor/app-error": "^0.0.2",
     "chalk": "^2.3.0",
     "ellipsize": "^0.0.3",
-    "inquirer": "^3.3.0",
+    "inquirer": "^4.0.0",
     "keytar": "^4.0.5",
-    "makitso-develop-plugin": "^1.0.0",
-    "makitso-tunnelblick2fa-plugin": "^1.0.1",
+    "makitso-develop-plugin": "^2.0.0",
+    "makitso-tunnelblick2fa-plugin": "^2.0.0",
     "terminal-kit": "^1.14.3",
     "yargs-parser": "^8.0.0"
   },

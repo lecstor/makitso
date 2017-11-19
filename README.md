@@ -7,6 +7,7 @@ With Makitso you can build interactive commandline apps with simple plugin
 modules which define commands, a property schema, and/or storage
 connectors.
 
+### Context Schema
 The schema defines context properties, the storage to use, and a prompt for
 collecting the value of the property.
 ```js
@@ -26,8 +27,10 @@ collecting the value of the property.
 }
 ```
 
-Commands define the command arguments format, help description and an action
-function.
+### Commands Definition
+
+Commands define the command arguments format, help description, an action
+function, and optional choices function for autocomplete.
 
 Commands can be grouped using the config.command property for all
 commands in the plugin, and with object nesting within the plugin. Autocomplete
@@ -106,8 +109,8 @@ $ yarn global add makitso
 $ makitso
 ```
 
-Makitso uses [inquirer](https://github.com/SBoudrias/Inquirer.js/),
-and a modified version of [inquirer-command-promt](https://github.com/sullof/inquirer-command-prompt),
+Makitso uses [inquirer](https://github.com/SBoudrias/Inquirer.js),
+and a modified version of [inquirer-command-prompt](https://github.com/sullof/inquirer-command-prompt),
 and some custom plumbing to hook them up to a central context module backed by
 session (memory), file, and secure (keychain) context storage.
 

@@ -5,7 +5,7 @@
 const path = require("path");
 const os = require("os");
 
-const CommandIt = require("../");
+const Makiso = require("../");
 const tunnelPlugin = require("makitso-tunnelblick2fa-plugin").plugin();
 const developPlugin = require("makitso-develop-plugin").plugin();
 
@@ -31,6 +31,9 @@ const localPlugin = {
         console.log(`${firstName} ${lastName}`);
       }
     }
+  },
+  config: {
+    command: "demo"
   }
 };
 
@@ -45,11 +48,11 @@ const options = {
   }
 };
 
-const DefaultStores = CommandIt.DefaultStores;
+const DefaultStores = Makiso.DefaultStores;
 const appName = path.basename(process.argv[1]);
-const cmdIt = CommandIt({ options });
+const makitso = Makiso({ options });
 
-cmdIt
+makitso
   .registerPlugins(
     DefaultStores({
       file: { path: path.join(os.homedir(), `/.${appName}.json`), data: {} },
@@ -59,4 +62,4 @@ cmdIt
     tunnelPlugin,
     developPlugin
   )
-  .then(() => cmdIt.start());
+  .then(() => makitso.start());

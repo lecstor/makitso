@@ -15,13 +15,13 @@
   "dependencies": {
     "@lecstor/app-error": "^0.0.2",
     "chalk": "^2.3.0",
-    "commander": "^2.11.0",
+    "ellipsize": "^0.0.3",
     "inquirer": "^3.3.0",
-    "inquirer-command-prompt": "^0.0.6",
     "keytar": "^4.0.5",
     "makitso-develop-plugin": "^1.0.0",
     "makitso-tunnelblick2fa-plugin": "^1.0.1",
-    "yargs": "^10.0.3"
+    "terminal-kit": "^1.14.3",
+    "yargs-parser": "^8.0.0"
   },
   "devDependencies": {
     "eslint": "^4.9.0",

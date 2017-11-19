@@ -3,7 +3,7 @@
 const _merge = require("lodash/merge");
 const _flatten = require("lodash/flatten");
 
-const cmd = require("./lib/program");
+const cmd = require("./lib/command");
 const Context = require("./lib/context");
 const DefaultStores = require("./lib/plugins/default-stores");
 const FileStore = require("./lib/plugins/store/file-store");
@@ -33,7 +33,12 @@ function registerPlugin(args) {
     _merge(pluginSet.stores, plugin.stores);
   }
   if (plugin.commands) {
-    _merge(pluginSet.commands, plugin.commands);
+    if (plugin.config && plugin.config.command) {
+      // group commands according to plugin config
+      _merge(pluginSet.commands, { [plugin.config.command]: plugin.commands });
+    } else {
+      _merge(pluginSet.commands, plugin.commands);
+    }
   }
   return pluginSet;
 }
@@ -46,12 +51,12 @@ function registerPlugin(args) {
  * @param {String} args.options.app.description - app description
  * @param {String} args.options.app.version - app version
  * @param {Object} args.options.prompt - prompt options
- * @param {String} [args.options.prompt.message="CommandIt>"] - text to display as the prompt
+ * @param {String} [args.options.prompt.message="Makitso>"] - text to display as the prompt
  * @param {Object} args.options.fileStore - file store options
  * @param {String} [args.options.fileStore.file="~/.commandit/file-store.json"] - location of the file store
  * @returns {Object} context
  */
-function CommandIt(args) {
+function Makitso(args) {
   const { options } = args;
   let pluginSet = { schema: {}, stores: {}, commands: {} };
 
@@ -76,13 +81,40 @@ function CommandIt(args) {
     start() {
       const { schema, stores, commands } = pluginSet;
       const context = Context({ schema, stores });
-      cmd(context, commands, options).catch(console.error);
+      cmd({ context, commands, options }).catch(console.error);
     }
   };
 }
 
-module.exports = CommandIt;
-CommandIt.DefaultStores = DefaultStores;
-CommandIt.MemoryStore = MemoryStore;
-CommandIt.FileStore = FileStore;
-CommandIt.KeychainStore = KeychainStore;
+module.exports = Makitso;
+Makitso.DefaultStores = DefaultStores;
+Makitso.MemoryStore = MemoryStore;
+Makitso.FileStore = FileStore;
+Makitso.KeychainStore = KeychainStore;
+
+process.stdin.resume(); // so the program will not close instantly
+
+function exitHandler(options, err) {
+  if (options.cleanup) {
+    console.log("clean");
+  }
+  if (err) {
+    console.log(err.stack);
+  }
+  if (options.exit) {
+    process.exit();
+  }
+}
+
+// do something when app is closing
+process.on("exit", exitHandler.bind(null, { cleanup: true }));
+
+// catches ctrl+c event
+process.on("SIGINT", exitHandler.bind(null, { exit: true }));
+
+// catches "kill pid" (for example: nodemon restart)
+process.on("SIGUSR1", exitHandler.bind(null, { exit: true }));
+process.on("SIGUSR2", exitHandler.bind(null, { exit: true }));
+
+// catches uncaught exceptions
+process.on("uncaughtException", exitHandler.bind(null, { exit: true }));

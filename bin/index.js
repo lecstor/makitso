@@ -39,15 +39,15 @@ const localPlugin = {
           third: ["t", "a"]
         }
       },
-      action: ({ context, args }) => console.log(args),
-      choices: ({ context, args }) => {
-        if (!args.argv.first) {
+      action: ({ context, input }) => console.log(input),
+      choices: ({ context, input }) => {
+        if (!input.args.first) {
           return ["Hello", "hello"];
         }
-        if (!args.argv.second) {
+        if (!input.args.second) {
           return ["World", "world"];
         }
-        if (!args.argv.third) {
+        if (!input.args.third) {
           return ["Whatever you like"];
         }
       }

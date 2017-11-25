@@ -5,7 +5,7 @@
 const path = require("path");
 const os = require("os");
 
-const Makiso = require("../");
+const Makitso = require("../");
 const tunnelPlugin = require("makitso-tunnelblick2fa-plugin").plugin();
 const developPlugin = require("makitso-develop-plugin").plugin();
 
@@ -25,10 +25,31 @@ const localPlugin = {
   commands: {
     printName: {
       description: "Print your name",
-      action: async context => {
+      action: async ({ context }) => {
         const firstName = await context.get("my.name.first");
         const lastName = await context.get("my.name.last");
         console.log(`${firstName} ${lastName}`);
+      }
+    },
+    parseArgs: {
+      args: "first second [third[]]",
+      opts: {
+        alias: {
+          second: "s",
+          third: ["t", "a"]
+        }
+      },
+      action: ({ context, args }) => console.log(args),
+      choices: ({ context, args }) => {
+        if (!args.argv.first) {
+          return ["Hello", "hello"];
+        }
+        if (!args.argv.second) {
+          return ["World", "world"];
+        }
+        if (!args.argv.third) {
+          return ["Whatever you like"];
+        }
       }
     }
   },
@@ -48,13 +69,12 @@ const options = {
   }
 };
 
-const DefaultStores = Makiso.DefaultStores;
+const Plugins = Makitso.Plugins;
 const appName = path.basename(process.argv[1]);
-const makitso = Makiso({ options });
-
+const makitso = Makitso({ options });
 makitso
   .registerPlugins(
-    DefaultStores({
+    Plugins({
       file: { path: path.join(os.homedir(), `/.${appName}.json`), data: {} },
       session: { data: {} }
     }),
@@ -62,4 +82,5 @@ makitso
     tunnelPlugin,
     developPlugin
   )
-  .then(() => makitso.start());
+  .then(() => makitso.start())
+  .then(() => console.log("Goodbye!"));

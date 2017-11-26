@@ -83,4 +83,5 @@ makitso
     developPlugin
   )
   .then(() => makitso.start())
-  .then(() => console.log("Goodbye!"));
+  .then(() => console.log("Goodbye!"))
+  .catch(console.error);

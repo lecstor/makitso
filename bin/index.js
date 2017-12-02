@@ -5,6 +5,8 @@
 const path = require("path");
 const os = require("os");
 
+const _includes = require("lodash/includes");
+
 const Makitso = require("../");
 const tunnelPlugin = require("makitso-tunnelblick2fa-plugin").plugin();
 const developPlugin = require("makitso-develop-plugin").plugin();
@@ -32,29 +34,41 @@ const localPlugin = {
       }
     },
     parseArgs: {
-      args: "first second [third[]]",
-      opts: {
-        alias: {
-          second: "s",
-          third: ["t", "a"]
-        }
+      description: "Test some args and options parsing",
+      arguments: [
+        "fname {string} Your First Name",
+        "sname {string} Your Last Name",
+        "age {number} Your real age",
+        "rank {string} Your Rank",
+        "[likes[]] {string} Things you like"
+      ],
+      options: ["-d --doe a dear", "-f --far a long way"],
+      action: async ({ context, input }) => {
+        console.log(input);
       },
-      action: ({ context, input }) => console.log(input),
-      choices: ({ context, input }) => {
-        if (!input.args.first) {
-          return ["Hello", "hello"];
+      choices: async ({ context, input }) => {
+        if (!input.args.fname) {
+          return "*";
         }
-        if (!input.args.second) {
-          return ["World", "world"];
+        if (!input.args.sname) {
+          return "*";
         }
-        if (!input.args.third) {
-          return ["Whatever you like"];
+        if (!input.args.age) {
+          return "*";
+        }
+        const ranks = ["Colonel", "Lieutenant", "Major"];
+        if (!_includes(ranks, input.args.rank)) {
+          return ranks;
+        }
+        if (!input.args.likes || !input.args.likes.length) {
+          return ["What you like"];
         }
       }
     }
   },
   config: {
-    command: "demo"
+    command: "demo",
+    description: "Some demos to try"
   }
 };
 
@@ -83,5 +97,7 @@ makitso
     developPlugin
   )
   .then(() => makitso.start())
-  .then(() => console.log("Goodbye!"))
+  .then(() => {
+    console.log("Goodbye!");
+  })
   .catch(console.error);

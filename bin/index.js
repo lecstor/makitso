@@ -4,6 +4,7 @@
 
 const path = require("path");
 const os = require("os");
+const chalk = require("chalk");
 
 const _includes = require("lodash/includes");
 
@@ -78,9 +79,7 @@ const options = {
     description:
       "Makitso - A Framework for building composable interactive commandline apps"
   },
-  prompt: {
-    message: "Makitso>"
-  }
+  prompt: chalk`{blue Makitso> }`
 };
 
 const Plugins = Makitso.Plugins;

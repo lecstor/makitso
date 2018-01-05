@@ -16,7 +16,6 @@
     "@lecstor/app-error": "^0.0.2",
     "chalk": "^2.3.0",
     "ellipsize": "^0.0.3",
-    "enquirer": "^1.0.2",
     "js-yaml": "^3.10.0",
     "keytar": "^4.0.5",
     "makitso-develop-plugin": "^2.0.0",

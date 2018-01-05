@@ -4,7 +4,7 @@ A Framework for building composable interactive commandline apps.
 
 With Makitso you can build interactive commandline apps with simple plugin
 modules which define commands, property schemas, storage connectors, and
-[enquirer](https://github.com/enquirer/enquirer) commandline prompts.
+property commandline prompts.
 
 ### Context Schema
 

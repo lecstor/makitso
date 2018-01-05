@@ -2363,6 +2363,13 @@ makitso-develop-plugin@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/makitso-develop-plugin/-/makitso-develop-plugin-2.0.0.tgz#7fe6a503ef3981862302ac3914d98d41e6ee43cb"
 
+makitso-prompt@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/makitso-prompt/-/makitso-prompt-1.0.1.tgz#827a8779f0e072253cea1a5b22d7db8dae81b0cd"
+  dependencies:
+    chalk "^2.3.0"
+    prettyjson "^1.2.1"
+
 makitso-tunnelblick2fa-plugin@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/makitso-tunnelblick2fa-plugin/-/makitso-tunnelblick2fa-plugin-2.0.0.tgz#acae504050c86f241913b0d11b275fb3cdebe310"

@@ -20,6 +20,7 @@
     "js-yaml": "^3.10.0",
     "keytar": "^4.0.5",
     "makitso-develop-plugin": "^2.0.0",
+    "makitso-prompt": "^1.0.1",
     "makitso-tunnelblick2fa-plugin": "^2.0.0",
     "prettyjson": "^1.2.1",
     "prompt-base": "^5.0.0",

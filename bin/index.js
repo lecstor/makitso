@@ -18,30 +18,93 @@ const localPlugin = {
       name: {
         store: "file",
         prompt: {
-          type: "input",
-          name: "name",
-          message: `Enter your {variant} name ...`
+          header: `We'll only ask once..`,
+          prompt: `{variant} name> `,
+          footer: `Run this command again when you're done.`
+        }
+      }
+    },
+
+    prompt: {
+      withDefault: {
+        // if there is a stored value, does not prompt
+        store: "file",
+        ask: {
+          header: `A prompt with set default..`,
+          prompt: `prompt> `,
+          default: "help"
+        }
+      },
+      valueDefault: {
+        // always prompts
+        store: "file",
+        ask: {
+          header: `A prompt with value as default..`,
+          prompt: `prompt> `,
+          valueAsDefault: true
+        }
+      },
+      valueDefaultWithDefault: {
+        // always prompts
+        store: "file",
+        ask: {
+          header: `A prompt with values default or set default..`,
+          prompt: `prompt> `,
+          default: "help",
+          valueAsDefault: true
+        }
+      },
+      always: {
+        // always prompts
+        store: "file",
+        ask: {
+          header: `A prompt with set default..`,
+          prompt: `prompt> `,
+          default: "help",
+          when: "always"
         }
       }
     }
   },
   commands: {
     printName: {
-      description: "Print your name",
+      description: "Get and print full name",
       action: async ({ context }) => {
         const firstName = await context.get("my.name.first");
         const lastName = await context.get("my.name.last");
         console.log(`${firstName} ${lastName}`);
       }
     },
+
+    promptWDefault: {
+      description: "A prompt with set default..",
+      action: async ({ context }) => {
+        const command = await context.get("prompt.withDefault");
+        console.log(`${command}`);
+      }
+    },
+    promptVDefault: {
+      description: "A prompt with value as default..",
+      action: async ({ context }) => {
+        const command = await context.get("prompt.valueDefault");
+        console.log(`${command}`);
+      }
+    },
+    promptVDefaultWDefault: {
+      description: "A prompt with value as default or set default..",
+      action: async ({ context }) => {
+        const command = await context.get("prompt.valueDefaultWithDefault");
+        console.log(`${command}`);
+      }
+    },
     parseArgs: {
       description: "Test some args and options parsing",
       arguments: [
-        "fname {string} Your First Name",
-        "sname {string} Your Last Name",
-        "age {number} Your real age",
-        "rank {string} Your Rank",
-        "[likes[]] {string} Things you like"
+        "firstname {string} your first name",
+        "lastname {string} your last name",
+        "age {number} your real age",
+        "rank {string} your rank",
+        "[likes[]] {string} things you like"
       ],
       options: ["-d --doe a dear", "-f --far a long way"],
       action: async ({ context, input }) => {
@@ -49,13 +112,13 @@ const localPlugin = {
       },
       choices: async ({ context, input }) => {
         if (!input.args.fname) {
-          return "*";
+          return [];
         }
         if (!input.args.sname) {
-          return "*";
+          return [];
         }
         if (!input.args.age) {
-          return "*";
+          return [];
         }
         const ranks = ["Colonel", "Lieutenant", "Major"];
         if (!_includes(ranks, input.args.rank)) {

@@ -68,79 +68,76 @@ const schema = {
 };
 
 const commands = {
-  printName: {
-    description: "Get and print full name",
-    action: async ({ context }) => {
-      const firstName = await context.get("my.name.first");
-      const lastName = await context.get("my.name.last");
-      console.log(`${firstName} ${lastName}`);
-    }
-  },
+  demo: {
+    description: "Some demos to try",
+    commands: {
+      printName: {
+        description: "Get and print full name",
+        action: async ({ context }) => {
+          const firstName = await context.get("my.name.first");
+          const lastName = await context.get("my.name.last");
+          console.log(`${firstName} ${lastName}`);
+        }
+      },
 
-  promptWDefault: {
-    description: "A prompt with set default..",
-    action: async ({ context }) => {
-      const command = await context.get("prompt.withDefault");
-      console.log(`${command}`);
-    }
-  },
-  promptVDefault: {
-    description: "A prompt with value as default..",
-    action: async ({ context }) => {
-      const command = await context.get("prompt.valueDefault");
-      console.log(`${command}`);
-    }
-  },
-  promptVDefaultWDefault: {
-    description: "A prompt with value as default or set default..",
-    action: async ({ context }) => {
-      const command = await context.get("prompt.valueDefaultWithDefault");
-      console.log(`${command}`);
-    }
-  },
-  parseArgs: {
-    description: "Test some args and options parsing",
-    arguments: [
-      "firstname {string} your first name",
-      "lastname {string} your last name",
-      "age {number} your real age",
-      "rank {string} your rank",
-      "[likes[]] {string} things you like"
-    ],
-    options: ["-d --doe a dear", "-f --far a long way"],
-    action: async ({ context, input }) => {
-      console.log(input);
-    },
-    choices: async ({ context, input }) => {
-      if (!input.args.fname) {
-        return [];
-      }
-      if (!input.args.sname) {
-        return [];
-      }
-      if (!input.args.age) {
-        return [];
-      }
-      const ranks = ["Colonel", "Lieutenant", "Major"];
-      if (!_includes(ranks, input.args.rank)) {
-        return ranks;
-      }
-      if (!input.args.likes || !input.args.likes.length) {
-        return ["What you like"];
+      promptWDefault: {
+        description: "A prompt with set default..",
+        action: async ({ context }) => {
+          const command = await context.get("prompt.withDefault");
+          console.log(`${command}`);
+        }
+      },
+      promptVDefault: {
+        description: "A prompt with value as default..",
+        action: async ({ context }) => {
+          const command = await context.get("prompt.valueDefault");
+          console.log(`${command}`);
+        }
+      },
+      promptVDefaultWDefault: {
+        description: "A prompt with value as default or set default..",
+        action: async ({ context }) => {
+          const command = await context.get("prompt.valueDefaultWithDefault");
+          console.log(`${command}`);
+        }
+      },
+      parseArgs: {
+        description: "Test some args and options parsing",
+        arguments: [
+          "firstname {string} your first name",
+          "lastname {string} your last name",
+          "age {number} your real age",
+          "rank {string} your rank",
+          "[likes[]] {string} things you like"
+        ],
+        options: ["-d --doe a dear", "-f --far a long way"],
+        action: async ({ context, input }) => {
+          console.log(input);
+        },
+        choices: async ({ context, input }) => {
+          if (!input.args.fname) {
+            return [];
+          }
+          if (!input.args.sname) {
+            return [];
+          }
+          if (!input.args.age) {
+            return [];
+          }
+          const ranks = ["Colonel", "Lieutenant", "Major"];
+          if (!_includes(ranks, input.args.rank)) {
+            return ranks;
+          }
+          if (!input.args.likes || !input.args.likes.length) {
+            return ["What you like"];
+          }
+        }
       }
     }
   }
 };
 
-const localPlugin = {
-  schema,
-  commands: {
-    demo: {
-      ...commands,
-      description: "Some demos to try"
-    }
-  }
-};
+const localPlugin = { schema, commands };
 
 const options = {
   app: {

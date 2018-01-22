@@ -20,10 +20,10 @@ is stored in context and returned to the action.
     my: {
       name: {
         store: "file",
-        prompt: {
-          type: "input",
-          name: "name",
-          message: `Enter your {variant} name ...`
+        ask: {
+          header: `We'll only ask once..`,
+          prompt: `{variant} name> `,
+          footer: `Run this command again when you're done.`
         }
       }
     }
@@ -61,74 +61,64 @@ defined in the context schema and run custom code to get stuff done.
 
 ```js
 {
-  commands: {
-    set: {
-      args: "prop value",
-      description: "Set a context value",
-      action: ({ context, input }) => {
-        const { prop, value } = input.args;
-        context.set(prop, value)
-      })
-    },
-    printName: {
-      description: "Print your name",
-      action: async ({ context }) => {
-        const firstName = await context.get("my.name.first");
-        const lastName = await context.get("my.name.last");
-        console.log(`${firstName} ${lastName}`);
-      }
-    },
-    debug: {
-      on: {
-        description: "Turn on debugging",
+  demo: {
+    description: "Some demo commands",
+    commands: {
+      set: {
+        arguments: [
+          "prop {string} the name of the property",
+          "value {string} the property value",
+        ],
+        description: "Set a context value",
+        action: ({ context, input }) => {
+          const { prop, value } = input.args;
+          context.set(prop, value)
+        })
+      },
+      printName: {
+        description: "Print your name",
         action: async ({ context }) => {
-          process.env.DEBUG = 'makitso';
-          console.log("Debug On")
+          const firstName = await context.get("my.name.first");
+          const lastName = await context.get("my.name.last");
+          console.log(`${firstName} ${lastName}`);
         }
       },
-      off: {
-        description: "Turn off debugging",
-        action: async ({ context }) => {
-          process.env.DEBUG = '';
-          console.log("Debug Off")
-        }
-      }
-    },
-    dump: {
-      store: {
-        args: "storeId",
-        description: "Dump the store",
-        choices: ({ context, input }) => {
-          if (!input.args.storeId) {
-            return context.listStores();
+      debug: {
+        on: {
+          description: "Turn on debugging",
+          action: async ({ context }) => {
+            process.env.DEBUG = 'makitso';
+            console.log("Debug On")
           }
-          return [];
         },
-        action: async ({ context, input }) => {
-          const { storeId } = input.args;
-          const store = await context.getStore(storeId);
-          console.log(JSON.stringify(await store.read(), null, 2));
+        off: {
+          description: "Turn off debugging",
+          action: async ({ context }) => {
+            process.env.DEBUG = '';
+            console.log("Debug Off")
+          }
+        }
+      },
+      dump: {
+        store: {
+          arguments: [ "storeId {string} the name of the store", ],
+          description: "Dump the store",
+          choices: async ({ context, input }) => {
+            if (!input.args.storeId) {
+              return context.listStores();
+            }
+            return [];
+          },
+          action: async ({ context, input }) => {
+            const { storeId } = input.args;
+            const store = await context.getStore(storeId);
+            console.log(JSON.stringify(await store.read(), null, 2));
+          }
         }
       }
-    },
-  },
-  config: {
-    command: "demo"
+    }
   }
 }
-```
-
-Usage
-
-```
-$ makitso
-? Makitso> demo printName
-? Enter your first name ... Jason
-? Enter your last name ... Galea
-Jason Galea
-? Makitso> demo printName
-Jason Galea
-? Makitso>
 ```
 
 See the [builtin app](./bin/index.js) for an example or install this module

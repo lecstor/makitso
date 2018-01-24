@@ -48,8 +48,8 @@ properties handled by other plugins. If a required property has not already been
 set then the plugin which is handling it will prompt the user to enter it and
 then return the entered value.
 
-`args` define the positional command arguments. The last argument may be
-[optional], a list[], or [both[]].
+`arguments` define the positional command arguments. The last argument may be
+`[optional]`, a `list..`, or `[both...]`.
 
 `description` is displayed as part of the `help` command and as inline helpers
 in the input prompts.
@@ -66,8 +66,8 @@ defined in the context schema and run custom code to get stuff done.
     commands: {
       set: {
         arguments: [
-          "prop {string} the name of the property",
-          "value {string} the property value",
+          "prop - the name of the property",
+          "value - the property value",
         ],
         description: "Set a context value",
         action: ({ context, input }) => {
@@ -101,7 +101,7 @@ defined in the context schema and run custom code to get stuff done.
       },
       dump: {
         store: {
-          arguments: [ "storeId {string} the name of the store", ],
+          arguments: [ "storeId - the name of the store", ],
           description: "Dump the store",
           choices: async ({ context, input }) => {
             if (!input.args.storeId) {

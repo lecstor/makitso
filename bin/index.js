@@ -104,11 +104,11 @@ const commands = {
       parseArgs: {
         description: "Test some args and options parsing",
         arguments: [
-          "firstname {string} your first name",
-          "lastname {string} your last name",
-          "age {number} your real age",
-          "rank {string} your rank",
-          "[likes[]] {string} things you like"
+          "firstname - your first name",
+          "lastname - your last name",
+          "age - your real age",
+          "rank - your rank",
+          "[likes...] things you like"
         ],
         options: ["-d --doe a dear", "-f --far a long way"],
         action: async ({ context, input }) => {

@@ -18,7 +18,7 @@
     "ellipsize": "^0.0.3",
     "js-yaml": "^3.10.0",
     "keytar": "^4.0.5",
-    "makitso-prompt": "^1.0.1",
+    "makitso-prompt": "^2.0.0",
     "prettyjson": "^1.2.1",
     "yargs-parser": "^8.0.0"
   },

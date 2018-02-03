@@ -2,9 +2,19 @@
 
 A Framework for building composable interactive commandline apps.
 
-With Makitso you can build interactive commandline apps with simple plugin
-modules which define commands, property schemas, storage connectors, and
-property commandline prompts.
+The goal is to have a framework that can be used to build a single customised
+commandline app that developers in an organisation can easily install and use
+to do common tasks, hopefully without much instruction.
+
+To that end, Makitso allows a nested command structure, suggestions and
+auto-complete for commands and arguments, and prompting and storage of
+configuration properties specific to the user (or app, workspace, etc).
+
+Makitso plugin modules can be used to define commands, context (config) schema,
+and storage options. Once defined, context values can be used by commands from
+other plugins. If a value is not set the user is prompted to provide it. Once
+set, the value can be used as a default answer to a prompt, or returned to the
+command directly, depending on it's configuration.
 
 ### Context Schema
 
@@ -33,20 +43,19 @@ is stored in context and returned to the action.
 
 ### Commands Definition
 
-Commands define the command arguments and options format, help description, an
-action function, and optional choices function for autocomplete.
+Commands define the arguments and options format, help description, an action
+function, and optional suggest function for autocomplete.
 
-Commands can be grouped using the plugin's config.command property for all
-commands in the plugin, and by using object nesting within the plugin.
-Autocomplete is supported for each of the command levels.
+Commands can be nested to allow grouping commands as sub-commands.
+Suggestions and auto-complete are supported for each of the command levels.
 
-Commands can also provide a "choices" function which will allow autocomplete to
+Commands can also provide a "suggest" function which will allow autocomplete to
 provide available options for the command.
 
-Command action functions receive a context instance which gives access to
-properties handled by other plugins. If a required property has not already been
-set then the plugin which is handling it will prompt the user to enter it and
-then return the entered value.
+Command action functions receive context & input objects which gives access to
+properties handled by other plugins and the current command on the commandline.
+If a required property has not already been set then the plugin which is handling
+it will prompt the user to enter it and then return the entered value.
 
 `arguments` define the positional command arguments. The last argument may be
 `[optional]`, a `list..`, or `[both...]`.
@@ -59,70 +68,41 @@ it's only arg, containing the context instance and an input object containing
 the command arguments and options entered. It can get and set context properties
 defined in the context schema and run custom code to get stuff done.
 
+`suggest` recieves the same argiments as `action` and returns a list of commands
+or arguments which are displayed to the user. This list is later filtered using
+the partial command or argument entered by the user. Auto-complete can be triggered
+by the user with the tab key.
+
 ```js
-{
-  demo: {
-    description: "Some demo commands",
-    commands: {
-      set: {
-        arguments: [
-          "prop - the name of the property",
-          "value - the property value",
-        ],
-        description: "Set a context value",
-        action: ({ context, input }) => {
-          const { prop, value } = input.args;
-          context.set(prop, value)
-        })
-      },
-      printName: {
-        description: "Print your name",
-        action: async ({ context }) => {
-          const firstName = await context.get("my.name.first");
-          const lastName = await context.get("my.name.last");
-          console.log(`${firstName} ${lastName}`);
-        }
-      },
-      debug: {
-        on: {
-          description: "Turn on debugging",
-          action: async ({ context }) => {
-            process.env.DEBUG = 'makitso';
-            console.log("Debug On")
-          }
-        },
-        off: {
-          description: "Turn off debugging",
-          action: async ({ context }) => {
-            process.env.DEBUG = '';
-            console.log("Debug Off")
-          }
-        }
-      },
-      dump: {
-        store: {
-          arguments: [ "storeId - the name of the store", ],
-          description: "Dump the store",
-          choices: async ({ context, input }) => {
-            if (!input.args.storeId) {
-              return context.listStores();
-            }
-            return [];
-          },
-          action: async ({ context, input }) => {
-            const { storeId } = input.args;
-            const store = await context.getStore(storeId);
-            console.log(JSON.stringify(await store.read(), null, 2));
-          }
-        }
-      }
+const Makitso = require("makitso");
+
+const commands = {
+  up: {
+    description: "Bring up one or more services with docker compose",
+    arguments: ["services... - the service/s to bring up"],
+    action: async ({ context, input }) => {
+      const services = input.args.services.join(" ");
+      console.log(`shelljs.exec docker-compose up -d ${services}`);
+    },
+    suggest: async ({ context, input }) => {
+      // read and parse docker-compose.yml and return the services keys
+      return ["foo", "bar", "baz"];
+    }
+  },
+  down: {
+    description: "Bring down the stack",
+    action: async ({ context, input }) => {
+      console.log(`shelljs.exec docker-compose down`);
     }
   }
-}
+};
+
+const myMakitsoPlugin = { commands };
+
+Makitso({ plugins: myMakitsoPlugin }).catch(console.error);
 ```
 
-See the [builtin app](./bin/index.js) for an example or install this module
-globally and try it for yourself.
+See [examples](./examples) for examples of different Makitso features.
 
 ```
 $ yarn global add makitso

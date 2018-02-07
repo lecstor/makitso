@@ -1,6 +1,6 @@
 {
   "name": "makitso",
-  "version": "1.0.4",
+  "version": "1.1.0",
   "description": "A Framework for building composable interactive commandline apps",
   "main": "index.js",
   "author": "jason@lecstor.com",

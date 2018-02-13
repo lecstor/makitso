@@ -1926,9 +1926,9 @@ makeerror@1.0.x:
   dependencies:
     tmpl "1.0.x"
 
-makitso-prompt@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/makitso-prompt/-/makitso-prompt-2.0.0.tgz#054490069b99cc12a2681f75071f58fa0bfa94a8"
+makitso-prompt@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/makitso-prompt/-/makitso-prompt-2.0.1.tgz#110308ad90028844356c6efcaed9bc02d596a798"
   dependencies:
     ansi-escapes "^3.0.0"
     chalk "^2.3.0"

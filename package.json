@@ -20,7 +20,7 @@
     "keytar": "^4.0.5",
     "makitso-prompt": "^2.0.2",
     "prettyjson": "^1.2.1",
-    "yargs-parser": "^8.0.0"
+    "yargs-parser": "^9.0.2"
   },
   "devDependencies": {
     "eslint": "^4.9.0",

@@ -18,20 +18,20 @@
     "ellipsize": "^0.0.3",
     "js-yaml": "^3.10.0",
     "keytar": "^4.0.5",
-    "makitso-prompt": "^2.0.1",
+    "makitso-prompt": "^2.0.2",
     "prettyjson": "^1.2.1",
     "yargs-parser": "^8.0.0"
   },
   "devDependencies": {
     "eslint": "^4.9.0",
     "eslint-config-prettier": "^2.6.0",
-    "eslint-config-standard": "^10.2.1",
+    "eslint-config-standard": "^11.0.0",
     "eslint-plugin-import": "^2.8.0",
-    "eslint-plugin-node": "^5.2.0",
+    "eslint-plugin-node": "^6.0.0",
     "eslint-plugin-prettier": "^2.3.1",
     "eslint-plugin-promise": "^3.6.0",
     "eslint-plugin-standard": "^3.0.1",
-    "jest": "^21.2.1",
+    "jest": "^22.4.0",
     "prettier": "^1.7.4"
   },
   "engines": {

@@ -1,4 +1,4 @@
-import { findCommand } from "../find";
+import { findCommand } from "./find";
 
 describe("find", () => {
   const commands = {

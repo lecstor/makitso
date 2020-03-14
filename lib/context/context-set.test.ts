@@ -1,5 +1,5 @@
-import { Context } from "../index";
-import { MemoryStore } from "../../plugins/stores/memory-store";
+import { Context } from "./index";
+import { MemoryStore } from "../plugins/stores/memory-store";
 
 describe("set", () => {
   it("sets a value with no variant specified (default)", async () => {

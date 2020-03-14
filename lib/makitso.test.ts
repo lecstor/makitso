@@ -1,6 +1,6 @@
 import { Prompt } from "makitso-prompt";
 
-import { Makitso } from "../makitso";
+import { Makitso } from "./makitso";
 
 const options = {
   app: {

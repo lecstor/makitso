@@ -1,7 +1,7 @@
 import { Prompt } from "makitso-prompt";
 
-import { Context } from "../index";
-import { MemoryStore } from "../../plugins/stores/memory-store";
+import { Context } from "./index";
+import { MemoryStore } from "../plugins/stores/memory-store";
 
 let prompt: Prompt;
 

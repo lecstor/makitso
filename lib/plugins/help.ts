@@ -1,14 +1,13 @@
-"use strict";
+import _forEach from "lodash/forEach";
 
-const _forEach = require("lodash/forEach");
+import { findCommand } from "../command/find";
+import { Commands, Context, Input } from "../types";
 
-const findCommand = require("../command/find");
-
-function write(str) {
+function write(str: string) {
   console.log(str);
 }
 
-function printCommands(commands, prefix = "") {
+function printCommands(commands: Commands, prefix = "") {
   _forEach(commands, (command, name) => {
     write(
       `${prefix}${name} - ${command.description || "No description supplied"}`
@@ -16,25 +15,27 @@ function printCommands(commands, prefix = "") {
   });
 }
 
-async function action({ context, input }) {
+async function action({ context, input }: { context: Context; input: Input }) {
   const { commands } = context;
 
   if (input.args.command && input.args.command.length) {
     const cmdLine = input.args.command.join(" ");
-    const command = await findCommand({ cmdLine, commands });
-    const { appCmd } = command;
-    if (appCmd.commands) {
-      write(`\n  ${cmdLine} sub-commands:\n`);
-      printCommands(appCmd.commands, `    `);
-    } else {
-      write(`\n  ${cmdLine} - ${appCmd.description}\n`);
-      if (appCmd.arguments && appCmd.arguments.length) {
-        write("    Arguments:");
-        appCmd.arguments.forEach(arg => write(`      ${arg}`));
-      }
-      if (appCmd.options && appCmd.options.length) {
-        write("    Options:");
-        appCmd.options.forEach(opt => write(`      ${opt}`));
+    const commandMeta = await findCommand({ cmdLine, commands });
+    if (commandMeta) {
+      const { appCmd } = commandMeta;
+      if (appCmd.commands) {
+        write(`\n  ${cmdLine} sub-commands:\n`);
+        printCommands(appCmd.commands, `    `);
+      } else {
+        write(`\n  ${cmdLine} - ${appCmd.description}\n`);
+        if (appCmd.arguments && appCmd.arguments.length) {
+          write("    Arguments:");
+          appCmd.arguments.forEach(arg => write(`      ${arg}`));
+        }
+        if (appCmd.options && appCmd.options.length) {
+          write("    Options:");
+          appCmd.options.forEach(opt => write(`      ${opt}`));
+        }
       }
     }
   } else {
@@ -44,7 +45,7 @@ async function action({ context, input }) {
   write("");
 }
 
-async function suggest({ context, input }) {
+async function suggest({ context, input }: { context: Context; input: Input }) {
   const { commands } = context;
   if (input.args.command && input.args.command.length) {
     const cmdLine = input.args.command.join(" ");
@@ -69,8 +70,6 @@ const commands = {
   }
 };
 
-function plugin() {
+export function plugin() {
   return { commands };
 }
-
-module.exports = plugin;

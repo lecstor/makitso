@@ -1,11 +1,9 @@
-const Commands = require("./commands");
-const Stores = require("./stores");
+import { plugin as commandsPlugin } from "./commands";
+import { plugin as storesPlugin, PluginArgs } from "./stores";
 
-async function plugin(args) {
+export async function plugin(args: PluginArgs) {
   return {
-    stores: await Stores(args),
-    commands: Commands()
+    stores: await storesPlugin(args),
+    commands: commandsPlugin()
   };
 }
-
-module.exports = plugin;

@@ -1,6 +1,6 @@
-const { Prompt } = require("makitso-prompt");
+import { Prompt } from "makitso-prompt";
 
-const Makitso = require("../makitso");
+import { Makitso } from "../makitso";
 
 const options = {
   app: {
@@ -39,13 +39,13 @@ const testCommands = {
   }
 };
 
-function lastCalled(mock) {
+function lastCalled(mock: jest.Mock) {
   return mock.mock.calls[mock.mock.calls.length - 1][0];
 }
 
 const comQuit = Promise.resolve("quit");
 
-async function initMakitso({ command }) {
+async function initMakitso({ command }: { command: string }) {
   const prompt = new Prompt();
   prompt.start = jest
     .fn()
@@ -140,22 +140,22 @@ describe("Makitso", () => {
       missing: [
         {
           description: "- first one",
-          isMulti: undefined,
-          isOptional: undefined,
+          isMulti: false,
+          isOptional: false,
           name: "one",
           string: "one - first one"
         },
         {
           description: "- second one",
-          isMulti: undefined,
-          isOptional: undefined,
+          isMulti: false,
+          isOptional: false,
           name: "two",
           string: "two - second one"
         },
         {
           description: "- third one",
-          isMulti: undefined,
-          isOptional: undefined,
+          isMulti: false,
+          isOptional: false,
           name: "three",
           string: "three - third one"
         }

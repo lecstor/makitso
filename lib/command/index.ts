@@ -1,14 +1,22 @@
 "use strict";
 
-const history = require("makitso-prompt");
+import { Prompt, keyPressHistory } from "makitso-prompt";
 
-const debug = require("../debug");
-const parse = require("./args");
-const findCommand = require("./find");
-const Autocomplete = require("./keypress-autocomplete");
-const AutoHelp = require("./keypress-autohelp");
-const CommandInfo = require("./keypress-command-info");
-const Validate = require("./keypress-validate");
+import { debug } from "../debug";
+import { parse } from "./args";
+import { findCommand } from "./find";
+import { Autocomplete } from "./keypress-autocomplete";
+import { AutoHelp } from "./keypress-autohelp";
+import { keyPressCommandInfo } from "./keypress-command-info";
+import { keyPressValidate } from "./keypress-validate";
+
+import { ContextSchema, Defs } from "../types";
+
+type Args = {
+  context: ContextSchema;
+  commands: Defs;
+  prompt: Prompt;
+};
 
 /**
  * Prompt the user for a command and run it
@@ -21,17 +29,19 @@ const Validate = require("./keypress-validate");
  * @param {Function} [arg0.validate] - prompt validation
  * @returns {void}
  */
-async function promptAndRun(arg0) {
+async function promptAndRun(arg0: Args): Promise<Error | void> {
   const { context, commands, prompt } = arg0;
   try {
-    const cmdLine = await prompt.start();
+    const cmdLine = `${await prompt.start()}`;
     debug({ cmdLine });
     const cmd = await findCommand({ cmdLine, commands });
     if (cmd) {
       const { appCmd, cmdArgs } = cmd;
       const input = parse({ appCmd, cmdArgs });
       debug({ appCmd, cmdArgs, input });
-      await appCmd.action({ context, command: appCmd, input });
+      if (appCmd.action) {
+        await appCmd.action({ context, command: appCmd, input });
+      }
     }
     return promptAndRun(arg0);
   } catch (error) {
@@ -41,33 +51,33 @@ async function promptAndRun(arg0) {
   }
 }
 
-function initCommandPrompt({ context, commands, prompt }) {
-  const commandInfo = CommandInfo({ context, commands });
+function initCommandPrompt({ context, commands, prompt }: Args) {
+  const commandInfo = keyPressCommandInfo({ context, commands });
 
   const keyPressParser = {
     keyPress: commandInfo
   };
 
   const keyPressAutocomplete = {
-    keyPress: Autocomplete({ context, commandInfo })
+    keyPress: Autocomplete({ commandInfo })
   };
 
   const keyPressAutoHelp = {
-    keyPress: AutoHelp({ commandInfo })
+    keyPress: AutoHelp()
   };
 
-  const keyPressValidate = {
-    keyPress: Validate()
+  const keyPressValidator = {
+    keyPress: keyPressValidate()
   };
 
   Object.assign(prompt, {
     keyPressers: [
       ...prompt.keyPressers,
-      history,
+      keyPressHistory,
       keyPressParser,
       keyPressAutocomplete,
       keyPressAutoHelp,
-      keyPressValidate
+      keyPressValidator
     ]
   });
 
@@ -82,11 +92,9 @@ function initCommandPrompt({ context, commands, prompt }) {
  * @param {Object} arg0.commands - app commands
  * @returns {void}
  */
-async function start(arg0) {
+export async function start(arg0: Args) {
   const { context, commands, prompt } = arg0;
 
   initCommandPrompt({ context, commands, prompt });
   return promptAndRun({ context, commands, prompt });
 }
-
-module.exports = start;

@@ -1,11 +1,10 @@
-jest.mock("fs");
-
-const fs = require("fs");
-const { promisify } = require("util");
+import fs from "fs";
+import { promisify } from "util";
+import { FileStore } from "../file-store";
 
 const writeFile = promisify(fs.writeFile);
 
-const Store = require("../file-store");
+jest.mock("fs");
 
 beforeAll(() => {
   return writeFile(
@@ -16,10 +15,10 @@ beforeAll(() => {
 });
 
 describe("File Store", () => {
-  let store;
+  let store: FileStore;
 
   beforeAll(async () => {
-    store = await Store({ path: "file.json" });
+    store = await new FileStore({ path: "file.json" }).load();
   });
 
   it("provides get", async () => {

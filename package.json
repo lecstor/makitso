@@ -20,15 +20,17 @@
     "ellipsize": "^0.0.3",
     "js-yaml": "^3.10.0",
     "keytar": "^4.0.5",
-    "makitso-prompt": "../makitso-prompt/makitso-prompt-v2.9.1.tgz",
+    "makitso-prompt": "3.0.0-beta.1",
     "prettyjson": "^1.2.1",
     "yargs-parser": "^9.0.2"
   },
   "devDependencies": {
     "@types/eslint-plugin-prettier": "2.2.0",
+    "@types/jest": "^25.1.4",
     "@types/lodash": "^4.14.149",
     "@types/node": "^13.7.7",
     "@types/prettier": "1.19.0",
+    "@types/yargs-parser": "^15.0.0",
     "@typescript-eslint/eslint-plugin": "^2.7.0",
     "@typescript-eslint/parser": "^2.2.0",
     "eslint": "^6.6.0",
@@ -40,12 +42,10 @@
     "node-ansiterminal": "^0.2.1-beta",
     "prettier": "^1.18.2",
     "prettier-eslint": "^8.3.1",
+    "ts-jest": "^25.2.1",
     "typescript": "^3.8.3"
   },
   "engines": {
     "node": ">=8.9"
-  },
-  "jest": {
-    "testEnvironment": "node"
   }
 }

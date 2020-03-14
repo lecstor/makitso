@@ -1,8 +1,9 @@
 jest.mock("keytar");
 
-const Store = require("../keychain-store");
+import { KeychainStore } from "../keychain-store";
+
 const prop = {
-  path: "twitter.password",
+  schemaPath: "twitter.password",
   storeOptions: {
     service: "twitter.password",
     account: "{variant}"
@@ -10,7 +11,7 @@ const prop = {
 };
 
 describe("Keychain Store", () => {
-  const store = Store();
+  const store = new KeychainStore();
 
   it("provides set", async () => {
     await expect(

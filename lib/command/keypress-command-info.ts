@@ -1,24 +1,28 @@
-const _filter = require("lodash/filter");
+import _filter from "lodash/filter";
+import { State } from "makitso-prompt";
 
-const parse = require("./args");
-const findCommand = require("./find");
+import { parse } from "./args";
+import { findCommand } from "./find";
 
-const debug = require("../debug");
+import { debug } from "../debug";
 
-function getSuggests(obj) {
+import { CommandInfo, CommandInfoArgs } from "../types";
+
+function getSuggests(obj: { [key: string]: unknown }) {
   return _filter(Object.keys(obj), choice => !choice.startsWith("_"));
 }
 
-function Parser({ context, commands }) {
-  return async function keyPress(state, press) {
-    let cmdLine = state.command;
+export function keyPressCommandInfo({ context, commands }: CommandInfoArgs) {
+  return async function keyPress(state: State) {
+    const cmdLine = state.command;
     const cmd = await findCommand({ cmdLine, commands });
 
-    let info = {};
+    const info: CommandInfo = {};
 
     if (cmd) {
       const { appCmd, cmdArgs } = cmd;
-      info.description = appCmd._description || appCmd.description;
+      // info.description = appCmd._description || appCmd.description;
+      info.description = appCmd.description;
       info.opts = appCmd.opts;
       info.args = appCmd.args;
       info.suggests = getSuggests(appCmd.commands || appCmd);
@@ -64,9 +68,9 @@ function Parser({ context, commands }) {
     }
 
     debug({ cmd, cmdLine: `"${cmdLine}"` });
-    let filter;
+    let filter = "";
     if (!/\s$/.test(cmdLine)) {
-      filter = cmd ? cmd.cmdArgsList.pop() : cmdLine;
+      filter = (cmd ? cmd.cmdArgsList.pop() : cmdLine) || "";
     }
     if (filter) {
       const matches = _filter(info.suggests, choice =>
@@ -76,8 +80,7 @@ function Parser({ context, commands }) {
         info.suggests = matches;
       }
     }
-    state.commandLine({ info });
+    // state.commandLine({ info });
+    state.stash.info = info;
   };
 }
-
-exports = module.exports = Parser;

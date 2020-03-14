@@ -1,6 +1,14 @@
 "use strict";
 
-const keytar = require("keytar");
+import keytar from "keytar";
+
+import { Store } from "./types";
+
+type PropertyMeta = {
+  schemaPath: string;
+  variant?: string;
+  storeOptions: { service: string; account: string };
+};
 
 /**
  * Given a list of strings, replace {variant} with the value of variant
@@ -9,7 +17,7 @@ const keytar = require("keytar");
  * @param {...String} values - store option values
  * @returns {Array} The service and account values.
  */
-function replaceVariant(variant, ...values) {
+function replaceVariant(variant: string, ...values: string[]) {
   return values.map(value => value.replace("{variant}", variant));
 }
 
@@ -27,73 +35,71 @@ function replaceVariant(variant, ...values) {
  * @param {String} prop.storeOptions.account - The account name for the property.
  * @returns {Array} The service and account values.
  */
-function extractProp(prop) {
-  const { service = prop.schemaPath, account = prop.variant } =
-    prop.storeOptions || {};
-  return replaceVariant(prop.variant, service, account);
+function extractProp({ schemaPath, variant = "", storeOptions }: PropertyMeta) {
+  const { service = schemaPath, account = variant } = storeOptions || {};
+  return replaceVariant(variant, service, account);
 }
 
-function KeychainStore() {
-  return {
-    /**
-     * Get the value of a property from the store.
-     *
-     * @param {Object} prop - The property schema.
-     * @param {String} prop.schemaPath - Dotted path to the property in the schema.
-     * @param {String} prop.variant - The name of the variant of the property.
-     * @param {Object} prop.storeOptions - Property options for the store.
-     * @param {String} prop.storeOptions.service - The service name for the property.
-     * @param {String} prop.storeOptions.account - The account name for the property.
-     * @returns {Promise} the property value
-     */
-    get: async function(prop) {
-      const [service, account] = extractProp(prop);
-      return keytar.getPassword(service, account);
-    },
+export class KeychainStore implements Store {
+  /**
+   * Get the value of a property from the store.
+   *
+   * @param {Object} prop - The property schema.
+   * @param {String} prop.schemaPath - Dotted path to the property in the schema.
+   * @param {String} prop.variant - The name of the variant of the property.
+   * @param {Object} prop.storeOptions - Property options for the store.
+   * @param {String} prop.storeOptions.service - The service name for the property.
+   * @param {String} prop.storeOptions.account - The account name for the property.
+   * @returns {Promise} the property value
+   */
+  get({ schemaPath, variant, storeOptions }: PropertyMeta) {
+    const [service, account] = extractProp({
+      schemaPath,
+      variant,
+      storeOptions
+    });
+    return keytar.getPassword(service, account);
+  }
 
-    /**
-     * Set the value of a property in the store.
-     *
-     * @param {Object} prop - The property schema.
-     * @param {String} prop.schemaPath - Dotted path to the property in the schema.
-     * @param {String} prop.variant - The name of the variant of the property.
-     * @param {Object} prop.storeOptions - Property options for the store.
-     * @param {String} prop.storeOptions.service - The service name for the property.
-     * @param {String} prop.storeOptions.account - The account name for the property.
-     * @param {*} value - The value to set on the property.
-     * @returns {Promise} the property value
-     */
-    set: async function(prop, value) {
-      const [service, account] = extractProp(prop);
-      await keytar.setPassword(service, account, value);
-      return value;
-    },
+  /**
+   * Set the value of a property in the store.
+   *
+   * @param {Object} prop - The property schema.
+   * @param {String} prop.schemaPath - Dotted path to the property in the schema.
+   * @param {String} prop.variant - The name of the variant of the property.
+   * @param {Object} prop.storeOptions - Property options for the store.
+   * @param {String} prop.storeOptions.service - The service name for the property.
+   * @param {String} prop.storeOptions.account - The account name for the property.
+   * @param {String} value - The value to set on the property.
+   * @returns {Promise} the property value
+   */
+  async set(prop: PropertyMeta, value: string) {
+    const [service, account] = extractProp(prop);
+    await keytar.setPassword(service, account, value);
+    return value;
+  }
 
-    /**
-     * Delete a property from the store.
-     *
-     * @param {Object} prop - The property schema.
-     * @param {String} prop.schemaPath - Dotted path to the property in the schema.
-     * @param {String} prop.variant - The name of the variant of the property.
-     * @param {Object} prop.storeOptions - Property options for the store.
-     * @param {String} prop.storeOptions.service - The service name for the property.
-     * @param {String} prop.storeOptions.account - The account name for the property.
-     * @returns {Promise} the property value
-     */
-    delete: async function(prop) {
-      const [service, account] = extractProp(prop);
-      return keytar.deletePassword(service, account);
-    }
-  };
+  /**
+   * Delete a property from the store.
+   *
+   * @param {Object} prop - The property schema.
+   * @param {String} prop.schemaPath - Dotted path to the property in the schema.
+   * @param {String} prop.variant - The name of the variant of the property.
+   * @param {Object} prop.storeOptions - Property options for the store.
+   * @param {String} prop.storeOptions.service - The service name for the property.
+   * @param {String} prop.storeOptions.account - The account name for the property.
+   * @returns {Promise} the property value
+   */
+  delete(prop: PropertyMeta) {
+    const [service, account] = extractProp(prop);
+    return keytar.deletePassword(service, account);
+  }
 }
 
-function plugin() {
+export function plugin() {
   return {
     stores: {
-      keychain: KeychainStore()
+      keychain: new KeychainStore()
     }
   };
 }
-
-module.exports = KeychainStore;
-KeychainStore.plugin = plugin;

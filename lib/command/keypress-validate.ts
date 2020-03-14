@@ -1,12 +1,14 @@
-const _map = require("lodash/map");
-const _get = require("lodash/get");
-const chalk = require("chalk");
+import _map from "lodash/map";
+import _get from "lodash/get";
+import chalk from "chalk";
 
-function Validate() {
-  return async function keyPress(state, press) {
+import { KeyPress, State } from "makitso-prompt";
+
+export function keyPressValidate() {
+  return async function keyPress(state: State, press: KeyPress) {
     if (state.returnCommand && state.command.trim()) {
       if (press.key.name === "return") {
-        const { info } = state.commandLine();
+        const { info } = state.stash;
         if (!info.hasAction) {
           state.returnCommand = false;
           state.header = chalk`{yellow "${state.command.trim()}" is not a complete command}`;
@@ -25,5 +27,3 @@ function Validate() {
     return state;
   };
 }
-
-exports = module.exports = Validate;

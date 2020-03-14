@@ -1,7 +1,7 @@
-const Store = require("../memory-store");
+import { MemoryStore } from "../memory-store";
 
 describe("Memory Store", () => {
-  const store = Store({
+  const store = new MemoryStore({
     data: { github: { username: { default: "lecstor" } } }
   });
   it("provides get", async () => {

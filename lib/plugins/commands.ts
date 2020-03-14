@@ -1,8 +1,8 @@
 "use strict";
 
-const Help = require("./help");
+import { plugin as helpPlugin } from "./help";
 
-const help = Help();
+const help = helpPlugin();
 
 const commands = {
   quit: {
@@ -18,4 +18,4 @@ function plugin() {
   return commands;
 }
 
-module.exports = plugin;
+export { plugin };

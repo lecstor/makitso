@@ -2,7 +2,7 @@
 "use strict";
 
 // const Makitso = require("makitso");
-const Makitso = require("../../");
+const { Makitso } = require("../../dist");
 
 const commands = {
   // define a command "sayHi"

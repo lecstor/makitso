@@ -1,25 +1,33 @@
-"use strict";
+import _merge from "lodash/merge";
+import _flatten from "lodash/flatten";
+import _isString from "lodash/isString";
 
-const _merge = require("lodash/merge");
-const _flatten = require("lodash/flatten");
-const _forEach = require("lodash/forEach");
-const _isString = require("lodash/isString");
-const _map = require("lodash/map");
-const _reduce = require("lodash/reduce");
+import { Prompt } from "makitso-prompt";
 
-const start = require("./command");
-const Context = require("./context");
-const { Prompt } = require("makitso-prompt");
+import { start } from "./command";
+import { Context } from "./context";
+import {
+  YargsParserOptions,
+  Argument,
+  Command,
+  Commands,
+  Def,
+  Option,
+  Plugin,
+  PluginSet
+} from "./types";
 
-const debug = require("./debug");
+import { debug } from "./debug";
 
 /**
  *
  * @param {String} arg - name and description
  * @returns {Object} arg
  */
-function parseArgument(arg) {
-  let [name, ...description] = arg.split(/\s+/);
+function parseArgument(arg: string): Argument {
+  const args = arg.split(/\s+/);
+  let [name] = args;
+  const [, ...description] = args;
   let isMulti;
   let isOptional;
   if (/^\[/.test(name)) {
@@ -35,8 +43,8 @@ function parseArgument(arg) {
   return {
     name,
     description: description.join(" "),
-    isMulti,
-    isOptional,
+    isMulti: Boolean(isMulti),
+    isOptional: Boolean(isOptional),
     string: arg
   };
 }
@@ -46,121 +54,114 @@ function parseArgument(arg) {
  * @param {String} opt - flags and description
  * @returns {Object} opt
  */
-function parseOption(opt) {
+function parseOption(opt: string) {
   const optBits = opt.split(/\s+/);
   debug({ optBits });
-  const options = _reduce(
-    optBits,
-    (result, val) => {
-      if (/^--\w/.test(val)) {
-        result.name = val.replace(/^--/, "");
-      } else if (/^-\w/.test(val)) {
-        result.alias = val.replace(/^-/, "");
-      } else if (/^\{\w+}$/.test(val)) {
-        const parseOpt = val.replace(/^\{/, "").replace(/}$/, "");
-        if (parseOpt === "bool" || parseOpt === "boolean") {
-          result.parseOpt.boolean = true;
-        }
-      } else {
-        result.description.push(val);
+  const initial: Option = {
+    name: "",
+    alias: "",
+    description: "",
+    parseOpt: { boolean: false }
+  };
+  const option = optBits.reduce((result, val) => {
+    if (/^--\w/.test(val)) {
+      result.name = val.replace(/^--/, "");
+    } else if (/^-\w/.test(val)) {
+      result.alias = val.replace(/^-/, "");
+    } else if (/^\{\w+}$/.test(val)) {
+      const parseOpt = val.replace(/^\{/, "").replace(/}$/, "");
+      if (parseOpt === "bool" || parseOpt === "boolean") {
+        result.parseOpt.boolean = true;
       }
-      return result;
-    },
-    { description: [], parseOpt: { boolean: false } }
-  );
-  options.description = options.description.join(" ");
-  return options;
+    } else {
+      result.description = `${result.description} ${val}`;
+    }
+    return result;
+  }, initial);
+  return option;
 }
 
-function optionsToArgsParserOpts(options) {
-  return _reduce(
-    options,
-    (result, opt) => {
-      result[opt.name] = opt.alias;
-      return result;
-    },
-    {}
-  );
+function optionsToArgsParserOpts(options: Option[]) {
+  return options.reduce((result = {}, opt) => {
+    result[opt.name] = opt.alias;
+    return result;
+  }, {} as YargsParserOptions["alias"]);
 }
 
-function parseCommandDef(def) {
+function parseCommandDef(command: Command) {
+  const def: Partial<Def> = command;
   def.argsLookup = {};
   if (def.arguments) {
-    def.args = _map(def.arguments, parseArgument);
-    def.argsLookup = _reduce(
-      def.args,
-      (lu, arg, idx) => {
-        lu[arg.name] = idx;
-        return lu;
-      },
-      {}
-    );
+    def.args = def.arguments.map(parseArgument);
+    def.argsLookup = def.args.reduce((lu, arg, idx) => {
+      lu ? (lu[arg.name] = idx) : (lu = { [arg.name]: idx });
+      return lu;
+    }, {} as Def["argsLookup"]);
   }
   if (def.options) {
-    def.opts = _reduce(
-      def.options,
-      (opts, opt) => {
-        // parse option and discard if name matches a positional arg
-        const pOpt = parseOption(opt);
-        if (def.argsLookup[pOpt.name] !== undefined) {
-          return opts;
-        }
-        opts.push(pOpt);
+    def.opts = def.options.reduce((opts, opt) => {
+      // parse option and discard if name matches a positional arg
+      const pOpt = parseOption(opt);
+      if (def.argsLookup?.[pOpt.name] !== undefined) {
         return opts;
-      },
-      []
-    );
-    def.optsLookup = _reduce(
-      def.opts,
-      (lu, opt, idx) => {
-        if (opt.name) {
-          lu[opt.name] = true;
-        }
-        if (opt.alias) {
-          lu[opt.alias] = true;
-        }
-        return lu;
-      },
-      {}
-    );
-    def.aliasLookup = _reduce(
-      def.opts,
-      (lu, opt, idx) => {
-        if (opt.alias) {
-          lu[opt.alias] = opt.name;
-        }
-        return lu;
-      },
-      {}
-    );
-    if (!def.argsParserOpts) {
-      def.argsParserOpts = { boolean: [] };
-    }
-    def.opts.forEach(opt => {
+      }
+      opts ? opts.push(pOpt) : (opts = [pOpt]);
+      return opts;
+    }, [] as Def["opts"]);
+    def.optsLookup = def.opts?.reduce((lu, opt) => {
+      if (opt.name) {
+        if (!lu) lu = {};
+        lu[opt.name] = true;
+      }
+      if (opt.alias) {
+        if (!lu) lu = {};
+        lu[opt.alias] = true;
+      }
+      return lu;
+    }, {} as Def["optsLookup"]);
+    def.aliasLookup = def.opts?.reduce((lu, opt) => {
+      if (opt.alias) {
+        if (!lu) lu = {};
+        lu[opt.alias] = opt.name;
+      }
+      return lu;
+    }, {} as Def["aliasLookup"]);
+    def.opts?.forEach(opt => {
       if (opt.parseOpt.boolean) {
-        def.argsParserOpts.boolean.push(opt.name);
+        if (!def.argsParserOpts?.boolean) {
+          def.argsParserOpts = { boolean: [opt.name] };
+        } else {
+          def.argsParserOpts.boolean.push(opt.name);
+        }
       }
     });
-    def.argsParserOpts.alias = optionsToArgsParserOpts(def.opts);
+    if (!def.argsParserOpts) {
+      def.argsParserOpts = {};
+    }
+    if (def.opts) def.argsParserOpts.alias = optionsToArgsParserOpts(def.opts);
   }
   debug({ def });
   return def;
 }
 
-function parseCommandDefs(commands) {
-  _forEach(commands, (def, key) => {
-    if (def.commands) {
-      parseCommandDefs(def.commands);
+function parseCommandDefs(commands: Commands) {
+  for (const key in commands) {
+    // _forEach(commands, (def, key) => {
+    const command = commands[key];
+    if (command.commands) {
+      parseCommandDefs(command.commands);
     } else {
-      commands[key] = parseCommandDef(def);
+      commands[key] = parseCommandDef(command);
     }
-  });
+  }
 }
 
-function mergeCommands(pluginSet, plugin) {
+function mergeCommands(pluginSet: PluginSet, plugin: Plugin) {
   const commands = plugin.commands;
-  parseCommandDefs(commands);
-  _merge(pluginSet.commands, plugin.commands);
+  if (commands) {
+    parseCommandDefs(commands);
+    _merge(pluginSet.commands, plugin.commands);
+  }
   return pluginSet;
 }
 
@@ -177,7 +178,7 @@ function mergeCommands(pluginSet, plugin) {
  * @param {Object} plugin.commands - commands
  * @returns {Object} the updated pluginSet
  */
-function addPlugin(pluginSet, plugin) {
+function addPlugin(pluginSet: PluginSet, plugin: Plugin) {
   if (plugin.schema) {
     _merge(pluginSet.schema, plugin.schema);
   }
@@ -199,7 +200,7 @@ function addPlugin(pluginSet, plugin) {
  * @param {Object[]|Object} plugins - a single plugin or list of plugins
  * @returns {Object} pluginSet
  */
-function createPluginSet(plugins) {
+function createPluginSet(plugins: Plugin | Plugin[]) {
   if (!Array.isArray(plugins)) {
     plugins = [plugins];
   }
@@ -220,23 +221,37 @@ function createPluginSet(plugins) {
  * @param {String|Prompt} [args.commandPrompt="Makitso>"] - prompt text or makitso-prompt instance
  * @returns {Promise} makitso
  */
-function Makitso(args = {}) {
-  const { plugins } = args;
-  let { commandPrompt } = args;
+type MakitsoArgs = {
+  plugins: Plugin | Plugin[];
+  commandPrompt?: string | Prompt;
+  options?: {
+    app: {
+      description: string;
+    };
+    prompt: {
+      message: string;
+    };
+  };
+};
+
+export function Makitso(args: MakitsoArgs) {
+  const { commandPrompt, plugins } = args;
+
+  let prompt: Prompt;
 
   if (commandPrompt) {
     if (_isString(commandPrompt)) {
-      commandPrompt = new Prompt({ prompt: commandPrompt });
+      prompt = new Prompt({ prompt: commandPrompt });
+    } else {
+      prompt = commandPrompt;
     }
   } else {
-    commandPrompt = new Prompt();
+    prompt = new Prompt();
   }
 
   return createPluginSet(plugins).then(pluginSet => {
     const { schema, stores, commands } = pluginSet;
     const context = Context({ schema, stores, commands });
-    return start({ context, commands, prompt: commandPrompt });
+    return start({ context, commands, prompt });
   });
 }
-
-module.exports = Makitso;

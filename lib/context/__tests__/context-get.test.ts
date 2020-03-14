@@ -1,12 +1,12 @@
-const { Prompt } = require("makitso-prompt");
+import { Prompt } from "makitso-prompt";
 
-const Context = require("../index");
-const MemoryStore = require("../../plugins/stores/memory-store");
+import { Context } from "../index";
+import { MemoryStore } from "../../plugins/stores/memory-store";
 
-let prompt;
+let prompt: Prompt;
 
-function nextInput(username) {
-  prompt.start.mockReturnValueOnce(Promise.resolve(username));
+function nextInput(username: string) {
+  (prompt.start as jest.Mock).mockReturnValueOnce(Promise.resolve(username));
 }
 
 describe("get", () => {
@@ -16,7 +16,7 @@ describe("get", () => {
   });
   it("prompts for a missing value, stores, and returns the answer", async () => {
     nextInput("lecstor");
-    const session = MemoryStore();
+    const session = new MemoryStore();
     const schema = {
       github: {
         username: {
@@ -27,7 +27,12 @@ describe("get", () => {
         }
       }
     };
-    const context = Context({ schema, stores: { session }, prompt });
+    const context = Context({
+      schema,
+      stores: { session },
+      prompt,
+      commands: {}
+    });
 
     let result = await context.get("github.username");
     expect(result).toEqual("lecstor");
@@ -46,7 +51,7 @@ describe("get", () => {
 
   it("prompts with a default value, stores, and returns the answer", async () => {
     nextInput("lecstor");
-    const session = MemoryStore();
+    const session = new MemoryStore();
     const schema = {
       github: {
         username: {
@@ -58,7 +63,12 @@ describe("get", () => {
         }
       }
     };
-    const context = Context({ schema, stores: { session }, prompt });
+    const context = Context({
+      schema,
+      stores: { session },
+      prompt,
+      commands: {}
+    });
 
     let result = await context.get("github.username");
     expect(result).toEqual("lecstor");
@@ -79,7 +89,7 @@ describe("get", () => {
 
   it("prompts with the value from the store as default, stores, and returns the answer", async () => {
     nextInput("lecstor");
-    const session = MemoryStore({
+    const session = new MemoryStore({
       data: { github: { username: { default: "lastUsed" } } }
     });
     const schema = {
@@ -94,7 +104,12 @@ describe("get", () => {
         }
       }
     };
-    const context = Context({ schema, stores: { session }, prompt });
+    const context = Context({
+      schema,
+      stores: { session },
+      prompt,
+      commands: {}
+    });
 
     let result = await context.get("github.username");
     expect(result).toEqual("lecstor");
@@ -114,7 +129,7 @@ describe("get", () => {
   });
 
   it("gets an existing value without prompt", () => {
-    const session = MemoryStore({
+    const session = new MemoryStore({
       data: { github: { username: { default: "lecstor" } } }
     });
     const schema = {
@@ -129,7 +144,12 @@ describe("get", () => {
         }
       }
     };
-    const context = Context({ schema, stores: { session }, prompt });
+    const context = Context({
+      schema,
+      stores: { session },
+      prompt,
+      commands: {}
+    });
     return expect(context.get("github.username")).resolves.toEqual("lecstor");
   });
 });

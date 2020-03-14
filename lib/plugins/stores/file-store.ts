@@ -1,11 +1,17 @@
 "use strict";
 
-const fs = require("fs");
-const { promisify } = require("util");
-const MemoryStore = require("./memory-store");
+import fs from "fs";
+import { promisify } from "util";
+import { MemoryStore, PropertyMeta } from "./memory-store";
+import { Store } from "./types";
 
 const readFile = promisify(fs.readFile);
 const writeFile = promisify(fs.writeFile);
+
+export type FileStoreArgs = {
+  path: string;
+  data?: { [key: string]: unknown };
+};
 
 /**
  * read an object from a JSON file
@@ -13,7 +19,7 @@ const writeFile = promisify(fs.writeFile);
  * @param {String} file - the path to a JSON file
  * @returns {Object|void} the parsed JSON object or void if the file does not exist
  */
-async function readJsonFile(file) {
+async function readJsonFile(file: string) {
   try {
     const buffer = await readFile(file);
     return JSON.parse(buffer.toString());
@@ -31,7 +37,7 @@ async function readJsonFile(file) {
  * @param {Object} content - plain Object
  * @returns {Promise} the result from writeFile
  */
-function writeJsonFile(file, content) {
+function writeJsonFile(file: string, content: { [key: string]: unknown }) {
   return writeFile(file, JSON.stringify(content), "utf8");
 }
 
@@ -42,86 +48,87 @@ function writeJsonFile(file, content) {
  * @param {String} args.file - the path to a JSON file
  * @returns {Object} FileStore
  */
-async function FileStore(args) {
-  const { path: filePath, data: initData = {} } = args;
+export class FileStore implements Store {
+  filePath: string;
+  initData: { [key: string]: unknown };
 
-  if (!filePath) {
-    return;
+  constructor(args: FileStoreArgs) {
+    const { path, data } = args;
+    this.filePath = path;
+    this.initData = data || {};
   }
 
-  const data = await readJsonFile(filePath);
-  if (!data) {
-    await writeJsonFile(filePath, initData);
-  }
-
-  return {
-    /**
-     * get a property from the store
-     *
-     * @param {Object} prop - property metadata
-     * @param {String} prop.propertyPath - the path to the property
-     * @returns {Promise} property value
-     */
-    get: async function(prop) {
-      const data = (await readJsonFile(filePath)) || {};
-      const memStore = MemoryStore({ data });
-      return memStore.get(prop);
-    },
-
-    /**
-     * set a property in the store
-     *
-     * @param {Object} prop - property metadata
-     * @param {String} prop.propertyPath - the path to the property
-     * @param {*} value - The value to set on the property.
-     * @returns {Promise} property value
-     */
-    set: async function(prop, value) {
-      const data = (await readJsonFile(filePath)) || {};
-      const memStore = MemoryStore({ data });
-      const newValue = await memStore.set(prop, value);
-      await writeJsonFile(filePath, memStore.read());
-      return newValue;
-    },
-
-    /**
-     * delete a property from the store
-     *
-     * @param {Object} prop - property metadata
-     * @param {String} prop.propertyPath - the path to the property
-     * @returns {Promise} previous property value
-     */
-    delete: async function(prop) {
-      const data = await readJsonFile(filePath);
-      if (!data) {
-        // file does not exist
-        return;
-      }
-      const memStore = MemoryStore({ data });
-      const value = await memStore.delete(prop);
-      await writeJsonFile(filePath, memStore.read());
-      return value;
-    },
-
-    /**
-     * Read file contents
-     *
-     * @returns {Promise} the value of the property
-     */
-    read: async function() {
-      return readJsonFile(filePath);
+  async load() {
+    const data = await readJsonFile(this.filePath);
+    if (!data) {
+      await writeJsonFile(this.filePath, this.initData);
     }
-  };
+    return this;
+  }
+
+  /**
+   * get a property from the store
+   *
+   * @param {Object} prop - property metadata
+   * @param {String} prop.propertyPath - the path to the property
+   * @returns {Promise} property value
+   */
+  async get(prop: PropertyMeta) {
+    const data = (await readJsonFile(this.filePath)) || {};
+    const memStore = new MemoryStore({ data });
+    return memStore.get(prop);
+  }
+
+  /**
+   * set a property in the store
+   *
+   * @param {Object} prop - property metadata
+   * @param {String} prop.propertyPath - the path to the property
+   * @param {*} value - The value to set on the property.
+   * @returns {Promise} property value
+   */
+  async set(prop: PropertyMeta, value: unknown) {
+    const data = (await readJsonFile(this.filePath)) || {};
+    const memStore = new MemoryStore({ data });
+    const newValue = await memStore.set(prop, value);
+    await writeJsonFile(this.filePath, memStore.read());
+    return newValue;
+  }
+
+  /**
+   * delete a property from the store
+   *
+   * @param {Object} prop - property metadata
+   * @param {String} prop.propertyPath - the path to the property
+   * @returns {Promise} previous property value
+   */
+  async delete(prop: PropertyMeta) {
+    const data = await readJsonFile(this.filePath);
+    if (!data) {
+      // file does not exist
+      return;
+    }
+    const memStore = new MemoryStore({ data });
+    const value = await memStore.delete(prop);
+    await writeJsonFile(this.filePath, memStore.read());
+    return value;
+  }
+
+  /**
+   * Read file contents
+   *
+   * @returns {Promise} the value of the property
+   */
+  async read() {
+    return readJsonFile(this.filePath);
+  }
 }
 
-async function plugin(args) {
-  const store = await FileStore(args);
+export async function plugin(args: FileStoreArgs) {
+  const store = await new FileStore(args).load();
   return {
     stores: {
       file: store
     }
   };
 }
-
-module.exports = FileStore;
-FileStore.plugin = plugin;

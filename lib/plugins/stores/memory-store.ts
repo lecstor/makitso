@@ -1,67 +1,76 @@
 "use strict";
 
-const _get = require("lodash/get");
-const _set = require("lodash/set");
-const _unset = require("lodash/unset");
+import _get from "lodash/get";
+import _set from "lodash/set";
+import _unset from "lodash/unset";
 
-function MemoryStore(args = {}) {
-  const { data = {} } = args;
-  return {
-    /**
-     * get a property from the store
-     *
-     * @param {Object} prop - property metadata
-     * @param {String} prop.propertyPath - the path to the property
-     * @returns {Promise} property value
-     */
-    get: async function(prop) {
-      return _get(data, prop.propertyPath);
-    },
+import { Store } from "./types";
 
-    /**
-     * set a property in the store
-     *
-     * @param {Object} prop - property metadata
-     * @param {String} prop.propertyPath - the path to the property
-     * @param {*} value - The value to set on the property.
-     * @returns {Promise} property value
-     */
-    set: async function(prop, value) {
-      _set(data, prop.propertyPath, value);
-      return value;
-    },
+export type PropertyMeta = {
+  propertyPath: string;
+};
 
-    /**
-     * delete a property from the store
-     *
-     * @param {Object} prop - property metadata
-     * @param {String} prop.propertyPath - the path to the property
-     * @returns {Promise} previous property value
-     */
-    delete: async function(prop) {
-      const value = await this.get(prop);
-      _unset(data, prop.propertyPath);
-      return value;
-    },
+export type MemoryStoreArgs = { data: Data };
 
-    /**
-     * read the store data
-     *
-     * @returns {Object} the store data
-     */
-    read: function() {
-      return JSON.parse(JSON.stringify(data));
-    }
-  };
+type Data = { [key: string]: unknown };
+
+export class MemoryStore implements Store {
+  data: Data;
+
+  constructor(args?: MemoryStoreArgs) {
+    this.data = args?.data || {};
+  }
+  /**
+   * get a property from the store
+   *
+   * @param {Object} prop - property metadata
+   * @param {String} prop.propertyPath - the path to the property
+   * @returns {Promise} property value
+   */
+  async get(prop: PropertyMeta) {
+    return _get(this.data, prop.propertyPath);
+  }
+
+  /**
+   * set a property in the store
+   *
+   * @param {Object} prop - property metadata
+   * @param {String} prop.propertyPath - the path to the property
+   * @param {*} value - The value to set on the property.
+   * @returns {Promise} property value
+   */
+  async set(prop: PropertyMeta, value: unknown) {
+    _set(this.data, prop.propertyPath, value);
+    return value;
+  }
+
+  /**
+   * delete a property from the store
+   *
+   * @param {Object} prop - property metadata
+   * @param {String} prop.propertyPath - the path to the property
+   * @returns {Promise} previous property value
+   */
+  async delete(prop: PropertyMeta) {
+    const value = await this.get(prop);
+    _unset(this.data, prop.propertyPath);
+    return value;
+  }
+
+  /**
+   * read the store data
+   *
+   * @returns {Object} the store data
+   */
+  read() {
+    return JSON.parse(JSON.stringify(this.data));
+  }
 }
 
-function plugin(args) {
+export function plugin(args: MemoryStoreArgs) {
   return {
     stores: {
-      session: MemoryStore(args)
+      session: new MemoryStore(args)
     }
   };
 }
-
-module.exports = MemoryStore;
-MemoryStore.plugin = plugin;

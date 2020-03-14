@@ -1,11 +1,11 @@
-const Context = require("../index");
-const MemoryStore = require("../../plugins/stores/memory-store");
+import { Context } from "../index";
+import { MemoryStore } from "../../plugins/stores/memory-store";
 
 describe("set", () => {
   it("sets a value with no variant specified (default)", async () => {
-    const session = MemoryStore();
+    const session = new MemoryStore();
     const schema = { github: { username: { store: "session" } } };
-    const context = Context({ schema, stores: { session } });
+    const context = Context({ schema, stores: { session }, commands: {} });
 
     let result = await context.set("github.username", "lecstor");
     expect(result).toEqual("lecstor");
@@ -21,9 +21,9 @@ describe("set", () => {
   });
 
   it("sets a value with a variant", async () => {
-    const session = MemoryStore();
+    const session = new MemoryStore();
     const schema = { github: { username: { store: "session" } } };
-    const context = Context({ schema, stores: { session } });
+    const context = Context({ schema, stores: { session }, commands: {} });
 
     let result = await context.set("github.username.work", "lecstor");
     expect(result).toEqual("lecstor");

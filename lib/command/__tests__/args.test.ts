@@ -1,4 +1,4 @@
-const parse = require("../args");
+import { parse } from "../args";
 
 describe("args", () => {
   describe("parse", () => {
@@ -9,6 +9,7 @@ describe("args", () => {
         args: { std: 123 },
         missing: [],
         current: "std"
+        // opts: {}
       });
     });
 
@@ -19,16 +20,18 @@ describe("args", () => {
         args: { std: "hello" },
         missing: [],
         current: "std"
+        // opts: {}
       });
     });
 
     test('when a standard arg with no alias has multiple values supplied, the extra values are "unknown"', () => {
-      const appCmd = { args: {} };
+      const appCmd = { args: [] };
       const cmdArgs = "hello world";
       expect(parse({ appCmd, cmdArgs })).toEqual({
         args: {},
         unknownArgs: ["hello", "world"],
         missing: []
+        // opts: {}
       });
     });
 
@@ -135,12 +138,17 @@ describe("args", () => {
     test("parser errors are thrown", () => {
       const appCmd = {
         args: [{ name: "std" }],
-        argsParserOpts: { coerce: { word: val => val.toLowercase() } }
+        argsParserOpts: {
+          coerce: {
+            word: () => {
+              throw new Error("boom");
+            }
+          }
+        }
+        // argsParserOpts: { coerce: { word: (val: string) => val.toLowercase() } }
       };
       const cmdArgs = "hello --word blah";
-      expect(() => parse({ appCmd, cmdArgs })).toThrow(
-        "val.toLowercase is not a function"
-      );
+      expect(() => parse({ appCmd, cmdArgs })).toThrow("boom");
     });
 
     describe("current", () => {

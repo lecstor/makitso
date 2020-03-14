@@ -1,8 +1,9 @@
-const _filter = require("lodash/filter");
+import _filter from "lodash/filter";
+import { KeyPress, State } from "makitso-prompt";
 
-function keyPressAutoComplete(choices) {
+export function keyPressAutoComplete(choices: string[]) {
   return {
-    keyPress: async function(state, press) {
+    keyPress: async function(state: State, press: KeyPress) {
       if (state.mode === "command") {
         const matches = _filter(choices, choice =>
           choice.startsWith(state.command)
@@ -19,5 +20,3 @@ function keyPressAutoComplete(choices) {
     }
   };
 }
-
-module.exports = keyPressAutoComplete;

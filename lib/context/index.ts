@@ -1,17 +1,21 @@
 "use strict";
 
-const AppError = require("@lecstor/app-error");
-const _get = require("lodash/get");
-const _isFunction = require("lodash/isFunction");
+import AppError from "@lecstor/app-error";
+import _get from "lodash/get";
+import _isFunction from "lodash/isFunction";
 
-const { Prompt } = require("makitso-prompt");
-const AutoComplete = require("./keypress-autocomplete");
+import { Prompt } from "makitso-prompt";
+
+import { Stores } from "../plugins/stores";
+
+import { keyPressAutoComplete } from "./keypress-autocomplete";
+import { Commands, ContextSchema } from "../types";
 
 /**
  * @param {String} schemaPath - the dotted path to the property schema
  * @returns {Error} - PropertySchemaNotDefined
  */
-function PropNotSetError(schemaPath) {
+function PropNotSetError(schemaPath: string) {
   return AppError("PropertySchemaNotDefined", {
     status: 400,
     message: `There is no schema defined for the property "${schemaPath}"`,
@@ -23,7 +27,7 @@ function PropNotSetError(schemaPath) {
  * @param {String} propRef - the dotted path to the property
  * @returns {Error} - PropBadFormatError
  */
-function PropBadFormatError(propRef) {
+function PropBadFormatError(propRef: string) {
   return AppError("PropertyBadlyFormatted", {
     status: 400,
     message: `"Property ${propRef}" is invalid.
@@ -36,7 +40,7 @@ function PropBadFormatError(propRef) {
  * @param {String} storeRef - a store idetifier
  * @returns {Error} - StoreNotFoundError
  */
-function StoreNotFoundError(storeRef) {
+function StoreNotFoundError(storeRef: string) {
   return AppError("StoreNotFound", {
     status: 400,
     message: `The requested context store "${storeRef}" does not exist.`,
@@ -48,7 +52,7 @@ function StoreNotFoundError(storeRef) {
  * @param {String} propRef - the dotted path to the property
  * @returns {Object} - property meta
  */
-function splitProp(propRef) {
+function splitProp(propRef: string) {
   const splitPropRef = propRef.split(".");
   if (splitPropRef.length < 2 || splitPropRef.length > 3) {
     throw PropBadFormatError(propRef);
@@ -77,7 +81,7 @@ function splitProp(propRef) {
  * @param {String} propRef - the dotted path to the property
  * @returns {PropertyMeta} property metadata
  */
-function getPropMeta(schema, propRef) {
+function getPropMeta(schema: ContextSchema, propRef: string) {
   const propMeta = splitProp(propRef);
   const propSchema = _get(schema, propMeta.schemaPath);
   if (!propSchema) {
@@ -95,7 +99,15 @@ function getPropMeta(schema, propRef) {
  * @param {Object} arg0.stores - Object of store objects.
  * @returns {Object} An instance of Context.
  */
-function Context(arg0 = {}) {
+
+type ContextArgs = {
+  commands: Commands;
+  prompt?: Prompt;
+  schema: ContextSchema;
+  stores: Stores;
+};
+
+export function Context(arg0: ContextArgs) {
   const { commands, schema, stores, prompt } = arg0;
   return {
     commands,
@@ -109,7 +121,7 @@ function Context(arg0 = {}) {
      * @param {string} prop - The property to get.
      * @returns {Promise} - The value of the property
      */
-    get: async function(prop) {
+    get: async function(prop: string) {
       const meta = getPropMeta(this.schema, prop);
 
       if (!meta.ask) {
@@ -126,18 +138,18 @@ function Context(arg0 = {}) {
         suggest
       } = meta.ask;
 
-      let value = await this.stores[meta.store].get(meta);
+      const value = await this.stores[meta.store].get(meta);
       // use stored value without prompting
       if (value && storedValueIs === "response") {
         return value;
       }
 
-      const prompt = this.prompt || Prompt();
+      const prompt = this.prompt || new Prompt();
       if (suggest) {
         const suggestList = _isFunction(suggest)
           ? await suggest({ property: prop })
           : suggest;
-        const complete = AutoComplete(suggestList);
+        const complete = keyPressAutoComplete(suggestList);
         Object.assign(prompt, {
           keyPressers: [...prompt.keyPressers, complete]
         });
@@ -158,11 +170,11 @@ function Context(arg0 = {}) {
     /**
      * Set a context property
      *
-     * @param {string} prop - The property to get.
+     * @param {string} prop - The property to set.
      * @param {*} value - The value of the property.
      * @returns {Promise} - The value of the property
      */
-    set: async function(prop, value) {
+    set: async function(prop: string, value: unknown) {
       const meta = getPropMeta(this.schema, prop);
       if (!this.stores[meta.store]) {
         throw StoreNotFoundError(meta.store);
@@ -177,7 +189,7 @@ function Context(arg0 = {}) {
      * @param {string} [variant="default"] - The name of the variant of this property type.
      * @returns {Promise} - The value of the property
      */
-    delete: async function(prop) {
+    delete: async function(prop: string) {
       const meta = getPropMeta(this.schema, prop);
       return this.stores[meta.store].delete(meta);
     },
@@ -188,7 +200,7 @@ function Context(arg0 = {}) {
      * @param {String} store - a store identifier
      * @returns {Object} store
      */
-    getStore: async function(store) {
+    getStore: async function(store: string) {
       return this.stores[store];
     },
 
@@ -210,5 +222,3 @@ function Context(arg0 = {}) {
     }
   };
 }
-
-module.exports = Context;

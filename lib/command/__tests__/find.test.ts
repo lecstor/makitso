@@ -1,8 +1,10 @@
-const findCommand = require("../find");
+import { findCommand } from "../find";
 
 describe("find", () => {
   const commands = {
-    top: { commands: { sub: { args: "foo qux", action: () => {} } } }
+    top: {
+      commands: { sub: { args: "foo qux", action: async () => undefined } }
+    }
   };
 
   it("finds nothing from nothing", async () => {
@@ -16,29 +18,41 @@ describe("find", () => {
   });
 
   it("finds a command group", async () => {
-    const { appCmd, cmdPath } = await findCommand({
+    const cmd = await findCommand({
       cmdLine: "top",
       commands
     });
-    expect(cmdPath).toEqual(["top"]);
-    expect(appCmd).toEqual(commands.top);
+    expect(cmd).toBeDefined;
+    if (cmd) {
+      const { appCmd, cmdPath } = cmd;
+      expect(cmdPath).toEqual(["top"]);
+      expect(appCmd).toEqual(commands.top);
+    }
   });
 
   it("finds a command - single arg", async () => {
-    const { appCmd, cmdPath } = await findCommand({
+    const cmd = await findCommand({
       cmdLine: "top sub do",
       commands
     });
-    expect(cmdPath).toEqual(["top", "sub"]);
-    expect(appCmd).toEqual(commands.top.commands.sub);
+    expect(cmd).toBeDefined;
+    if (cmd) {
+      const { appCmd, cmdPath } = cmd;
+      expect(cmdPath).toEqual(["top", "sub"]);
+      expect(appCmd).toEqual(commands.top.commands.sub);
+    }
   });
 
   it("finds a command - no args", async () => {
-    const { appCmd, cmdPath } = await findCommand({
+    const cmd = await findCommand({
       cmdLine: "top sub",
       commands
     });
-    expect(cmdPath).toEqual(["top", "sub"]);
-    expect(appCmd).toEqual(commands.top.commands.sub);
+    expect(cmd).toBeDefined;
+    if (cmd) {
+      const { appCmd, cmdPath } = cmd;
+      expect(cmdPath).toEqual(["top", "sub"]);
+      expect(appCmd).toEqual(commands.top.commands.sub);
+    }
   });
 });

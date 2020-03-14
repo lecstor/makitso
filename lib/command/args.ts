@@ -1,7 +1,9 @@
-const yargsParseArgs = require("yargs-parser");
-const _forEach = require("lodash/forEach");
+import yargsParseArgs from "yargs-parser";
+import _forEach from "lodash/forEach";
 
-const debug = require("../debug");
+import { debug } from "../debug";
+
+import { Argument, Def, ParsedArgs, YargsParserArguments } from "../types";
 
 /**
  * list missing args
@@ -10,8 +12,8 @@ const debug = require("../debug");
  * @param {Array} positionalArgs from commandline
  * @returns {Array[]} missing args
  */
-function findMissingArgs(appCmd, positionalArgs) {
-  let missing = [];
+function findMissingArgs(appCmd: Def, positionalArgs: string[]) {
+  const missing: Argument[] = [];
   _forEach(appCmd.args, (arg, idx) => {
     if (!positionalArgs[idx]) {
       if (!arg.isOptional) {
@@ -22,6 +24,8 @@ function findMissingArgs(appCmd, positionalArgs) {
   return missing;
 }
 
+type ArgV = Omit<YargsParserArguments, "_" | "$0">;
+
 /**
  * clean and format options specified in the command
  *
@@ -29,18 +33,19 @@ function findMissingArgs(appCmd, positionalArgs) {
  * @param {Object} argv - options parsed from commandline
  * @returns {Object} argv and unknown options
  */
-function processOptions(appCmd, argv) {
-  const newArgv = {};
-  let unknownOpts = [];
+function processOptions(appCmd: Def, argv: ArgV) {
+  // console.log("processOptions", JSON.stringify({ appCmd, argv }, null, 2));
+  const newArgv: ArgV = {};
+  const unknownOpts: ArgV[] = [];
   _forEach(argv, (val, key) => {
     // don't add aliases
-    if (!appCmd.aliasLookup[key]) {
+    if (!appCmd.aliasLookup?.[key]) {
       // ensure options are arrays unless boolean
       if (val !== true && val !== false) {
         val = Array.isArray(val) ? val : [val];
       }
       // classify unknown options
-      if (appCmd.optsLookup[key] === undefined) {
+      if (appCmd.optsLookup?.[key] === undefined) {
         unknownOpts.push({ [key]: val });
       } else {
         newArgv[key] = val;
@@ -48,6 +53,7 @@ function processOptions(appCmd, argv) {
     }
   });
   return { unknownOpts, args: newArgv };
+  // return { unknownOpts, options: newArgv };
 }
 
 /**
@@ -57,7 +63,11 @@ function processOptions(appCmd, argv) {
  * @param {Array} argsDef - the command arguments definition
  * @returns {String} the current arg
  */
-function getCurrentArg(argCount, nextArg, argsDef) {
+function getCurrentArg(
+  argCount: number,
+  nextArg: boolean,
+  argsDef?: Argument[]
+) {
   let current;
   if (argsDef && argsDef.length) {
     const lastIdx = argsDef.length - 1;
@@ -87,27 +97,35 @@ function getCurrentArg(argCount, nextArg, argsDef) {
  *
  * @param {Object} appCmd - command definition
  * @param {String} cmdArgs - arguments and options from commandline
- * @param {Object} cmdLine - commandLine string
+ * @param {String} cmdLine - commandLine string
  * @returns {Args} the parsed commandline
  */
-function parseArgs(appCmd, cmdArgs, cmdLine) {
-  let parsed = yargsParseArgs.detailed(cmdArgs, appCmd.argsParserOpts);
+function parseArgs(appCmd: Def, cmdArgs: string, cmdLine = "") {
+  const parsed = yargsParseArgs.detailed(cmdArgs, appCmd.argsParserOpts);
 
   if (parsed.error) {
     throw parsed.error;
   }
-
-  let { _: positionalArgs, ...args } = parsed.argv;
+  // eslint-disable-next-line prefer-const
+  // let { _: positionalArgs, ...args } = parsed.argv;
+  // eslint-disable-next-line prefer-const
+  let { _: positionalArgs, $0: script, ...args } = parsed.argv;
 
   // if positional args have no value they need to appear in missing
-  let missing = findMissingArgs(appCmd, positionalArgs);
+  const missing = findMissingArgs(appCmd, positionalArgs);
 
   let unknownOpts;
+  // eslint-disable-next-line prefer-const
   ({ args, unknownOpts } = processOptions(appCmd, args));
+  // eslint-disable-next-line prefer-const
+  // let { options, unknownOpts } = processOptions(appCmd, args);
 
-  let unknownArgs = [];
+  const unknownArgs: string[] = [];
   const lastIdx = appCmd.args ? appCmd.args.length - 1 : -1;
-  const lastArg = lastIdx >= 0 ? appCmd.args[lastIdx] : {};
+  const lastArg =
+    lastIdx >= 0 && appCmd.args?.[lastIdx]
+      ? appCmd.args[lastIdx]
+      : { isMulti: false, name: "" };
   // assign positional values
   _forEach(positionalArgs, (value, idx) => {
     if (appCmd.args && appCmd.args[idx]) {
@@ -116,9 +134,13 @@ function parseArgs(appCmd, cmdArgs, cmdLine) {
       } else {
         args[appCmd.args[idx].name] = value;
       }
-    } else if (lastArg.isMulti) {
+    } else if (lastArg?.isMulti) {
+      // if (Array.isArray(args[lastArg.name])) {
       args[lastArg.name].push(value);
     } else {
+      //     args[lastArg.name] = value;
+      //   }
+      // } else {
       unknownArgs.push(value);
     }
   });
@@ -127,7 +149,8 @@ function parseArgs(appCmd, cmdArgs, cmdLine) {
   const nextArg = /\s$/.test(cmdLine);
   const current = getCurrentArg(argCount, nextArg, appCmd.args);
 
-  const result = { args, missing, current };
+  const result: ParsedArgs = { args, missing, current };
+  // const result: ParsedArgs = { args, opts: options, missing, current };
   if (unknownArgs.length) {
     result.unknownArgs = unknownArgs;
   }
@@ -144,12 +167,14 @@ function parseArgs(appCmd, cmdArgs, cmdLine) {
  * @param {String} arg0.cmdArgs - arguments and options input
  * @returns {Args} parsed args with validation
  */
-function parse(arg0) {
-  let { appCmd, cmdArgs, cmdLine } = arg0;
+export function parse(arg0: {
+  appCmd: Def;
+  cmdArgs: string;
+  cmdLine?: string;
+}) {
+  const { appCmd, cmdArgs, cmdLine } = arg0;
   debug({ appCmd, cmdArgs });
   const parsedArgs = parseArgs(appCmd, cmdArgs, cmdLine);
   debug({ parsedArgs });
   return parsedArgs;
 }
-
-exports = module.exports = parse;

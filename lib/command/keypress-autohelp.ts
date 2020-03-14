@@ -1,8 +1,11 @@
-function AutoHelp({ commandInfo }) {
-  return async function keyPress(state, press) {
-    if (state.mode === "command") {
-      const { info } = state.commandLine();
-      let header = [];
+import { State } from "makitso-prompt";
+
+export function AutoHelp() {
+  return async function keyPress(state: State) {
+    const commandLine = state.commandLine();
+    if (state.mode === "command" && commandLine) {
+      const { info } = state.stash;
+      const header = [];
       if (info.description) {
         header.push(info.description);
       }
@@ -14,5 +17,3 @@ function AutoHelp({ commandInfo }) {
     return state;
   };
 }
-
-exports = module.exports = AutoHelp;

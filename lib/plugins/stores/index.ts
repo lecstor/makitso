@@ -1,17 +1,28 @@
-const FileStore = require("./file-store");
-const KeychainStore = require("./keychain-store");
-const MemoryStore = require("./memory-store");
+import { FileStore, FileStoreArgs } from "./file-store";
+import { KeychainStore } from "./keychain-store";
+import { MemoryStore, MemoryStoreArgs } from "./memory-store";
 
-async function plugin(args = {}) {
+export * from "./types";
+
+export type PluginArgs = {
+  session: MemoryStoreArgs;
+  file: FileStoreArgs;
+};
+
+type Plugin = {
+  secure: KeychainStore;
+  session: MemoryStore;
+  file?: FileStore;
+};
+
+export async function plugin(args: PluginArgs) {
   const { session = { data: {} }, file } = args;
-  const plugin = {
-    secure: KeychainStore(),
-    session: MemoryStore(session)
+  const plugin: Plugin = {
+    secure: new KeychainStore(),
+    session: new MemoryStore(session)
   };
   if (file) {
-    plugin.file = await FileStore(file);
+    plugin.file = await new FileStore(file).load();
   }
   return plugin;
 }
-
-module.exports = plugin;

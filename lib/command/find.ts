@@ -1,5 +1,7 @@
-const _forEach = require("lodash/forEach");
-const _trim = require("lodash/trim");
+import _forEach from "lodash/forEach";
+import _trim from "lodash/trim";
+
+import { Def, Defs } from "../types";
 
 /**
  * returns the deepest possible command for the cmdLine string
@@ -10,15 +12,27 @@ const _trim = require("lodash/trim");
  * @param {Object} arg0.commands - app commands definition
  * @returns {Object} { appCmd, cmdPath, cmdArgs }
  */
-async function findCommand(arg0) {
+type Args = {
+  cmdLine: string;
+  commands: Defs;
+};
+
+export type CommandMeta = {
+  appCmd: Def;
+  cmdPath: string[];
+  cmdArgs: string;
+  cmdArgsList: string[];
+};
+
+export async function findCommand(arg0: Args): Promise<CommandMeta | void> {
   const { cmdLine, commands } = arg0;
   const cleanCmdLine = _trim(cmdLine);
   if (!cleanCmdLine) {
     return;
   }
-  const words = cleanCmdLine.split(/\s+/);
-  let appCmd = { commands };
-  let cmdPath = [];
+  const words: string[] = cleanCmdLine.split(/\s+/);
+  let appCmd: Partial<Def> = { commands };
+  const cmdPath: string[] = [];
 
   _forEach([...words], word => {
     if (!appCmd.commands) {
@@ -27,12 +41,15 @@ async function findCommand(arg0) {
     if (!appCmd.commands[word]) {
       return false; // partial command or arg
     }
-    cmdPath.push(words.shift());
+    cmdPath.push(word);
+    words.shift();
     appCmd = appCmd.commands[word];
   });
+
   if (appCmd.commands === commands) {
     return;
   }
+
   return {
     appCmd,
     cmdPath,
@@ -40,5 +57,3 @@ async function findCommand(arg0) {
     cmdArgsList: words
   };
 }
-
-exports = module.exports = findCommand;

@@ -8,8 +8,11 @@ const commands = {
   // define a command "sayHi"
   sayHi: {
     description: "Says Hi",
-    action: async () => {
-      console.log("Hello World");
+    action: () => {
+      console.log("wait for me");
+      return new Promise(resolve => {
+        setTimeout(() => resolve(), 30000);
+      });
     }
   }
 };

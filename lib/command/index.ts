@@ -40,7 +40,7 @@ async function promptAndRun(arg0: Args): Promise<Error | void> {
       const input = parse({ appCmd, cmdArgs });
       debug({ appCmd, cmdArgs, input });
       if (appCmd.action) {
-        await appCmd.action({ context, command: appCmd, input });
+        await appCmd.action({ commands, context, command: appCmd, input });
       }
     }
     return promptAndRun(arg0);
@@ -72,6 +72,12 @@ function initCommandPrompt({ context, commands, prompt }: Args) {
 
   Object.assign(prompt, {
     keyPressers: [
+      {
+        async keyPress(state: any) {
+          debug("keyPresser1", state);
+          return state;
+        }
+      },
       ...prompt.keyPressers,
       keyPressHistory,
       keyPressParser,
@@ -96,5 +102,14 @@ export async function start(arg0: Args) {
   const { context, commands, prompt } = arg0;
 
   initCommandPrompt({ context, commands, prompt });
+
+  process.on("SIGINT", function() {
+    console.log("Interrupted");
+    console.log(prompt.state);
+    if (!prompt.state.pojo.returnCommand) {
+      process.exit();
+    }
+  });
+
   return promptAndRun({ context, commands, prompt });
 }

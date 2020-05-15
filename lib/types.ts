@@ -44,6 +44,13 @@ export type CommandActionInput = {
 };
 
 export type CommandActionArgs = {
+  commands: Commands;
+  command: Command;
+  context: ContextSchema;
+  input: CommandActionInput;
+};
+
+export type CommandSuggestArgs = {
   command: Command;
   context: ContextSchema;
   input: CommandActionInput;
@@ -56,7 +63,7 @@ export type Command = {
   action?: CommandAction;
   arguments?: string[];
   options?: string[];
-  suggest?: (args: CommandActionArgs) => Promise<string[]>;
+  suggest?: (args: CommandSuggestArgs) => Promise<string[]>;
   help?: (args: {
     context: ContextSchema;
     command: Def;

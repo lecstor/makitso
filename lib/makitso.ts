@@ -14,7 +14,7 @@ import {
   Def,
   Option,
   Plugin,
-  PluginSet
+  PluginSet,
 } from "./types";
 
 import { debug } from "./debug";
@@ -45,7 +45,7 @@ function parseArgument(arg: string): Argument {
     description: description.join(" "),
     isMulti: Boolean(isMulti),
     isOptional: Boolean(isOptional),
-    string: arg
+    string: arg,
   };
 }
 
@@ -61,7 +61,7 @@ function parseOption(opt: string) {
     name: "",
     alias: "",
     description: "",
-    parseOpt: { boolean: false }
+    parseOpt: { boolean: false },
   };
   const option = optBits.reduce((result, val) => {
     if (/^--\w/.test(val)) {
@@ -126,7 +126,7 @@ function parseCommandDef(command: Command) {
       }
       return lu;
     }, {} as Def["aliasLookup"]);
-    def.opts?.forEach(opt => {
+    def.opts?.forEach((opt) => {
       if (opt.parseOpt.boolean) {
         if (!def.argsParserOpts?.boolean) {
           def.argsParserOpts = { boolean: [opt.name] };
@@ -204,9 +204,9 @@ function createPluginSet(plugins: Plugin | Plugin[]) {
   if (!Array.isArray(plugins)) {
     plugins = [plugins];
   }
-  return Promise.all(_flatten(plugins)).then(pluginList => {
+  return Promise.all(_flatten(plugins)).then((pluginList) => {
     let pluginSet = { schema: {}, stores: {}, commands: {} };
-    pluginList.forEach(plugin => {
+    pluginList.forEach((plugin) => {
       pluginSet = addPlugin(pluginSet, plugin);
     });
     return pluginSet;
@@ -232,10 +232,11 @@ type MakitsoArgs = {
       message: string;
     };
   };
+  cmdLine: string;
 };
 
 export function Makitso(args: MakitsoArgs) {
-  const { commandPrompt, plugins } = args;
+  const { commandPrompt, plugins, cmdLine } = args;
 
   let prompt: Prompt;
 
@@ -249,9 +250,9 @@ export function Makitso(args: MakitsoArgs) {
     prompt = new Prompt();
   }
 
-  return createPluginSet(plugins).then(pluginSet => {
+  return createPluginSet(plugins).then((pluginSet) => {
     const { schema, stores, commands } = pluginSet;
     const context = Context({ schema, stores, commands });
-    return start({ context, commands, prompt });
+    return start({ context, commands, prompt, cmdLine });
   });
 }

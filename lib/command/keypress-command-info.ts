@@ -9,7 +9,7 @@ import { debug } from "../debug";
 import { CommandInfo, CommandInfoArgs } from "../types";
 
 function getSuggests(obj: { [key: string]: unknown }) {
-  return _filter(Object.keys(obj), choice => !choice.startsWith("_"));
+  return _filter(Object.keys(obj), (choice) => !choice.startsWith("_"));
 }
 
 export function keyPressCommandInfo({ context, commands }: CommandInfoArgs) {
@@ -39,7 +39,7 @@ export function keyPressCommandInfo({ context, commands }: CommandInfoArgs) {
             info.suggests = await appCmd.suggest({
               context,
               command: appCmd,
-              input: info.input
+              input: info.input,
             });
             debug(["command.suggests", info.suggests]);
           } else {
@@ -55,7 +55,7 @@ export function keyPressCommandInfo({ context, commands }: CommandInfoArgs) {
             info.help = await appCmd.help({
               context,
               command: appCmd,
-              input: info.input
+              input: info.input,
             });
             debug(["command.helps", info.help]);
           } else {
@@ -73,7 +73,7 @@ export function keyPressCommandInfo({ context, commands }: CommandInfoArgs) {
       filter = (cmd ? cmd.cmdArgsList.pop() : cmdLine) || "";
     }
     if (filter) {
-      const matches = _filter(info.suggests, choice =>
+      const matches = _filter(info.suggests, (choice) =>
         choice.startsWith(filter)
       );
       if (matches.length) {

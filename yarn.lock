@@ -3004,10 +3004,10 @@ makeerror@1.0.x:
   dependencies:
     tmpl "1.0.x"
 
-makitso-prompt@^3.0.0:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/makitso-prompt/-/makitso-prompt-3.0.1.tgz#9fa143f1136b759afd0866ee3196e08e196b9746"
-  integrity sha512-DSBxa9DeBmAYm2rSNCfMi3IA/70dwgWkxx/vVezRXTV1a0zi4whtX/3vuX3tooceralb13lsHP1p988giZwWLw==
+makitso-prompt@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/makitso-prompt/-/makitso-prompt-3.0.2.tgz#85f94469161fb82f9d719ebada78b450a82233b2"
+  integrity sha512-t4pD7jkKCtbJQnNlkRwmZTPun59EDJyGumIMSPBRh/XTzJce51IawLzAfv5clQw2rzufpWvXljy5yU3EVk9QKA==
   dependencies:
     ansi-escapes "^4.3.1"
     chalk "^4.0.0"

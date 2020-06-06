@@ -12,7 +12,8 @@
   },
   "scripts": {
     "build": "rm -rf dist/ && tsc",
-    "test": "jest"
+    "test": "jest",
+    "prepare": "yarn build"
   },
   "dependencies": {
     "@lecstor/app-error": "^0.0.2",
@@ -20,7 +21,7 @@
     "ellipsize": "^0.1.0",
     "js-yaml": "^3.10.0",
     "keytar": "^6.0.1",
-    "makitso-prompt": "^3.0.0",
+    "makitso-prompt": "^3.0.2",
     "prettyjson": "^1.2.1",
     "yargs-parser": "^18.1.3"
   },

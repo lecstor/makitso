@@ -3125,9 +3125,9 @@ makeerror@1.0.x:
     tmpl "1.0.x"
 
 makitso-prompt@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/makitso-prompt/-/makitso-prompt-3.0.0.tgz#512b198a8eb20de4c3624efdaa8790d09023fb00"
-  integrity sha512-8r0yRwfonybmBeHUn6vy4hllONRRtdXCwCjUjIXel6316EzE0KD7G9WSj160jdIX3Ol+OCrBFMAv0peoQVImBQ==
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/makitso-prompt/-/makitso-prompt-3.0.1.tgz#9fa143f1136b759afd0866ee3196e08e196b9746"
+  integrity sha512-DSBxa9DeBmAYm2rSNCfMi3IA/70dwgWkxx/vVezRXTV1a0zi4whtX/3vuX3tooceralb13lsHP1p988giZwWLw==
   dependencies:
     ansi-escapes "^4.3.1"
     chalk "^4.0.0"

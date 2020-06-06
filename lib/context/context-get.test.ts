@@ -22,16 +22,16 @@ describe("get", () => {
         username: {
           store: "session",
           ask: {
-            prompt: `Enter your username.. `
-          }
-        }
-      }
+            prompt: `Enter your username.. `,
+          },
+        },
+      },
     };
     const context = Context({
       schema,
       stores: { session },
       prompt,
-      commands: {}
+      commands: {},
     });
 
     let result = await context.get("github.username");
@@ -42,7 +42,7 @@ describe("get", () => {
       footer: "",
       header: "",
       prompt: "Enter your username.. ",
-      maskInput: false
+      maskInput: false,
     });
 
     result = await session.get({ propertyPath: "github.username.default" });
@@ -58,16 +58,16 @@ describe("get", () => {
           store: "session",
           ask: {
             prompt: `Enter your username.. `,
-            default: "lecstor"
-          }
-        }
-      }
+            default: "lecstor",
+          },
+        },
+      },
     };
     const context = Context({
       schema,
       stores: { session },
       prompt,
-      commands: {}
+      commands: {},
     });
 
     let result = await context.get("github.username");
@@ -79,7 +79,7 @@ describe("get", () => {
       footer: "",
       header: "",
       prompt: "Enter your username.. ",
-      maskInput: false
+      maskInput: false,
     });
 
     // the result was saved to the store
@@ -90,7 +90,7 @@ describe("get", () => {
   it("prompts with the value from the store as default, stores, and returns the answer", async () => {
     nextInput("lecstor");
     const session = new MemoryStore({
-      data: { github: { username: { default: "lastUsed" } } }
+      data: { github: { username: { default: "lastUsed" } } },
     });
     const schema = {
       github: {
@@ -99,16 +99,16 @@ describe("get", () => {
           ask: {
             prompt: `Enter your username.. `,
             default: "lecstor",
-            storedValueIs: "default"
-          }
-        }
-      }
+            storedValueIs: "default",
+          },
+        },
+      },
     };
     const context = Context({
       schema,
       stores: { session },
       prompt,
-      commands: {}
+      commands: {},
     });
 
     let result = await context.get("github.username");
@@ -120,7 +120,7 @@ describe("get", () => {
       footer: "",
       header: "",
       prompt: "Enter your username.. ",
-      maskInput: false
+      maskInput: false,
     });
 
     // the result was saved to the store
@@ -130,7 +130,7 @@ describe("get", () => {
 
   it("gets an existing value without prompt", () => {
     const session = new MemoryStore({
-      data: { github: { username: { default: "lecstor" } } }
+      data: { github: { username: { default: "lecstor" } } },
     });
     const schema = {
       github: {
@@ -139,16 +139,16 @@ describe("get", () => {
           ask: {
             prompt: `Enter your username.. `,
             default: "lecstor",
-            storedValueIs: "response"
-          }
-        }
-      }
+            storedValueIs: "response",
+          },
+        },
+      },
     };
     const context = Context({
       schema,
       stores: { session },
       prompt,
-      commands: {}
+      commands: {},
     });
     return expect(context.get("github.username")).resolves.toEqual("lecstor");
   });

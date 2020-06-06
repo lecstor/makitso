@@ -34,7 +34,7 @@ export async function findCommand(arg0: Args): Promise<CommandMeta | void> {
   let appCmd: Partial<Def> = { commands };
   const cmdPath: string[] = [];
 
-  _forEach([...words], word => {
+  _forEach([...words], (word) => {
     if (!appCmd.commands) {
       return false; // there are no sub-commands
     }
@@ -54,6 +54,6 @@ export async function findCommand(arg0: Args): Promise<CommandMeta | void> {
     appCmd,
     cmdPath,
     cmdArgs: words.join(" "),
-    cmdArgsList: words
+    cmdArgsList: words,
   };
 }

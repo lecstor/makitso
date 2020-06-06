@@ -15,7 +15,7 @@ export function keyPressValidate() {
         }
         const missing = _get(info, "input.missing", []);
         if (missing.length) {
-          const args = _map(missing, arg => arg.name);
+          const args = _map(missing, (arg) => arg.name);
           const { name, description } = missing[0];
           state.returnCommand = false;
           state.header = chalk`{yellow Missing Args: ${args.join(

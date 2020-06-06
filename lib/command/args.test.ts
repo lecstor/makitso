@@ -8,7 +8,7 @@ describe("args", () => {
       expect(parse({ appCmd, cmdArgs })).toEqual({
         args: { std: 123 },
         missing: [],
-        current: "std"
+        current: "std",
         // opts: {}
       });
     });
@@ -19,7 +19,7 @@ describe("args", () => {
       expect(parse({ appCmd, cmdArgs })).toEqual({
         args: { std: "hello" },
         missing: [],
-        current: "std"
+        current: "std",
         // opts: {}
       });
     });
@@ -30,7 +30,7 @@ describe("args", () => {
       expect(parse({ appCmd, cmdArgs })).toEqual({
         args: {},
         unknownArgs: ["hello", "world"],
-        missing: []
+        missing: [],
         // opts: {}
       });
     });
@@ -39,37 +39,37 @@ describe("args", () => {
       const appCmd = {
         args: [{ name: "one" }],
         optsLookup: {},
-        aliasLookup: {}
+        aliasLookup: {},
       };
       expect(parse({ appCmd, cmdArgs: "hello --two world -t world" })).toEqual({
         args: { one: "hello" },
         unknownOpts: [{ two: ["world"] }, { t: ["world"] }],
         missing: [],
-        current: "one"
+        current: "one",
       });
       expect(parse({ appCmd, cmdArgs: "hello --two wor --two ld" })).toEqual({
         args: { one: "hello" },
         unknownOpts: [{ two: ["wor", "ld"] }],
         missing: [],
-        current: "one"
+        current: "one",
       });
       expect(parse({ appCmd, cmdArgs: "hello --t wor --t ld" })).toEqual({
         args: { one: "hello" },
         unknownOpts: [{ t: ["wor", "ld"] }],
         missing: [],
-        current: "one"
+        current: "one",
       });
     });
 
     test('when a standard arg has no value supplied it is named as "missing"', () => {
       const appCmd = {
-        args: [{ name: "std" }, { name: "std2" }, { name: "std3" }]
+        args: [{ name: "std" }, { name: "std2" }, { name: "std3" }],
       };
       const cmdArgs = "hello";
       expect(parse({ appCmd, cmdArgs })).toEqual({
         args: { std: "hello" },
         missing: [{ name: "std2" }, { name: "std3" }],
-        current: "std"
+        current: "std",
       });
     });
 
@@ -79,7 +79,7 @@ describe("args", () => {
       expect(parse({ appCmd, cmdArgs })).toEqual({
         args: { multi: ["thing"] },
         missing: [],
-        current: "multi"
+        current: "multi",
       });
     });
 
@@ -89,7 +89,7 @@ describe("args", () => {
       expect(parse({ appCmd, cmdArgs })).toEqual({
         args: {},
         missing: [],
-        current: "optional"
+        current: "optional",
       });
     });
 
@@ -97,13 +97,13 @@ describe("args", () => {
       const appCmd = {
         args: [
           { name: "std" },
-          { name: "optMulti", isMulti: true, isOptional: true }
-        ]
+          { name: "optMulti", isMulti: true, isOptional: true },
+        ],
       };
       expect(parse({ appCmd, cmdArgs: "hello" })).toEqual({
         args: { std: "hello" },
         missing: [],
-        current: "std"
+        current: "std",
       });
     });
 
@@ -111,13 +111,13 @@ describe("args", () => {
       const appCmd = {
         args: [
           { name: "std" },
-          { name: "optMulti", isMulti: true, isOptional: true }
-        ]
+          { name: "optMulti", isMulti: true, isOptional: true },
+        ],
       };
       expect(parse({ appCmd, cmdArgs: "hello world" })).toEqual({
         args: { std: "hello", optMulti: ["world"] },
         missing: [],
-        current: "optMulti"
+        current: "optMulti",
       });
     });
 
@@ -125,13 +125,13 @@ describe("args", () => {
       const appCmd = {
         args: [
           { name: "std" },
-          { name: "optMulti", isMulti: true, isOptional: true }
-        ]
+          { name: "optMulti", isMulti: true, isOptional: true },
+        ],
       };
       expect(parse({ appCmd, cmdArgs: "hello there, world" })).toEqual({
         args: { std: "hello", optMulti: ["there,", "world"] },
         missing: [],
-        current: "optMulti"
+        current: "optMulti",
       });
     });
 
@@ -142,9 +142,9 @@ describe("args", () => {
           coerce: {
             word: () => {
               throw new Error("boom");
-            }
-          }
-        }
+            },
+          },
+        },
         // argsParserOpts: { coerce: { word: (val: string) => val.toLowercase() } }
       };
       const cmdArgs = "hello --word blah";
@@ -154,57 +154,57 @@ describe("args", () => {
     describe("current", () => {
       test("current is undefined when there are no defined args", () => {
         const appCmd = {
-          args: []
+          args: [],
         };
         expect(parse({ appCmd, cmdArgs: "", cmdLine: "do " })).toEqual({
           args: {},
-          missing: []
+          missing: [],
         });
       });
 
       test("current is first arg when there is no input", () => {
         const appCmd = {
-          args: [{ name: "first" }, { name: "second" }]
+          args: [{ name: "first" }, { name: "second" }],
         };
         expect(parse({ appCmd, cmdArgs: "", cmdLine: "do " })).toEqual({
           args: {},
           current: "first",
-          missing: [{ name: "first" }, { name: "second" }]
+          missing: [{ name: "first" }, { name: "second" }],
         });
       });
 
       test("current is first arg when there is incomplete input", () => {
         const appCmd = {
-          args: [{ name: "first" }, { name: "second" }]
+          args: [{ name: "first" }, { name: "second" }],
         };
         expect(parse({ appCmd, cmdArgs: "abc", cmdLine: "do abc" })).toEqual({
           args: { first: "abc" },
           current: "first",
-          missing: [{ name: "second" }]
+          missing: [{ name: "second" }],
         });
       });
 
       test("current is second arg when there is complete input for first", () => {
         const appCmd = {
-          args: [{ name: "first" }, { name: "second" }]
+          args: [{ name: "first" }, { name: "second" }],
         };
         expect(parse({ appCmd, cmdArgs: "abc", cmdLine: "do abc " })).toEqual({
           args: { first: "abc" },
           current: "second",
-          missing: [{ name: "second" }]
+          missing: [{ name: "second" }],
         });
       });
 
       test("current is second arg when there is complete input for first", () => {
         const appCmd = {
-          args: [{ name: "first" }, { name: "second" }]
+          args: [{ name: "first" }, { name: "second" }],
         };
         expect(
           parse({ appCmd, cmdArgs: "abc def", cmdLine: "do abc def" })
         ).toEqual({
           args: { first: "abc", second: "def" },
           current: "second",
-          missing: []
+          missing: [],
         });
       });
     });

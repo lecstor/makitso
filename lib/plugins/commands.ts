@@ -9,9 +9,9 @@ const commands = {
     description: "Exit this tool",
     action: () => {
       throw new Error("quit");
-    }
+    },
   },
-  ...help.commands
+  ...help.commands,
 };
 
 function plugin() {

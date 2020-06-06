@@ -10,11 +10,11 @@ const commands = {
     description: "Says Hi",
     action: () => {
       console.log("wait for me");
-      return new Promise(resolve => {
+      return new Promise((resolve) => {
         setTimeout(() => resolve(), 30000);
       });
-    }
-  }
+    },
+  },
 };
 
 Makitso({ plugins: { commands } }).catch(console.error);

@@ -12,7 +12,7 @@ const commands = {
       // define an option as single character and/or multi character switches and a description
       // if an option should not take a value, include the {boolean} type marker
       "-h --hello {boolean} - say Hello",
-      "-g --greeting - custom Greeting"
+      "-g --greeting - custom Greeting",
     ],
 
     action: async ({ context, input }) => {
@@ -24,8 +24,8 @@ const commands = {
         message = greeting;
       }
       console.log(`${message} ${name}`);
-    }
-  }
+    },
+  },
 };
 
 Makitso({ plugins: [{ commands }] }).catch(console.error);

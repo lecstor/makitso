@@ -3,8 +3,8 @@ import { findCommand } from "./find";
 describe("find", () => {
   const commands = {
     top: {
-      commands: { sub: { args: "foo qux", action: async () => undefined } }
-    }
+      commands: { sub: { args: "foo qux", action: async () => undefined } },
+    },
   };
 
   it("finds nothing from nothing", async () => {
@@ -20,7 +20,7 @@ describe("find", () => {
   it("finds a command group", async () => {
     const cmd = await findCommand({
       cmdLine: "top",
-      commands
+      commands,
     });
     expect(cmd).toBeDefined;
     if (cmd) {
@@ -33,7 +33,7 @@ describe("find", () => {
   it("finds a command - single arg", async () => {
     const cmd = await findCommand({
       cmdLine: "top sub do",
-      commands
+      commands,
     });
     expect(cmd).toBeDefined;
     if (cmd) {
@@ -46,7 +46,7 @@ describe("find", () => {
   it("finds a command - no args", async () => {
     const cmd = await findCommand({
       cmdLine: "top sub",
-      commands
+      commands,
     });
     expect(cmd).toBeDefined;
     if (cmd) {

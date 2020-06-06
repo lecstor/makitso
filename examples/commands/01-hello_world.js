@@ -10,8 +10,8 @@ const commands = {
     description: "Says Hi",
     action: async () => {
       console.log("Hello World");
-    }
-  }
+    },
+  },
 };
 
 Makitso({ plugins: { commands } }).catch(console.error);

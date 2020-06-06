@@ -18,10 +18,10 @@ const schema = {
       ask: {
         prompt: `Who will we say hi to? `,
         // Always prompts, using stored value as default when available
-        storedValueIs: "default"
-      }
-    }
-  }
+        storedValueIs: "default",
+      },
+    },
+  },
 };
 
 const commands = {
@@ -30,8 +30,8 @@ const commands = {
     action: async ({ context, input }) => {
       const name = await context.get("hello.default");
       console.log(`Hello ${name}`);
-    }
-  }
+    },
+  },
 };
 
 const myPlugin = { schema, commands };

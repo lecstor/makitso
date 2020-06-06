@@ -19,7 +19,7 @@ function PropNotSetError(schemaPath: string) {
   return AppError("PropertySchemaNotDefined", {
     status: 400,
     message: `There is no schema defined for the property "${schemaPath}"`,
-    meta: { propSchemaPath: schemaPath }
+    meta: { propSchemaPath: schemaPath },
   });
 }
 
@@ -32,7 +32,7 @@ function PropBadFormatError(propRef: string) {
     status: 400,
     message: `"Property ${propRef}" is invalid.
     A property reference is a dotted string with exactly two or three parts.`,
-    meta: { propRef }
+    meta: { propRef },
   });
 }
 
@@ -44,7 +44,7 @@ function StoreNotFoundError(storeRef: string) {
   return AppError("StoreNotFound", {
     status: 400,
     message: `The requested context store "${storeRef}" does not exist.`,
-    meta: { storeRef }
+    meta: { storeRef },
   });
 }
 
@@ -121,7 +121,7 @@ export function Context(arg0: ContextArgs) {
      * @param {string} prop - The property to get.
      * @returns {Promise} - The value of the property
      */
-    get: async function(prop: string) {
+    get: async function (prop: string) {
       const meta = getPropMeta(this.schema, prop);
 
       if (!meta.ask) {
@@ -135,7 +135,7 @@ export function Context(arg0: ContextArgs) {
         maskInput = false,
         prompt: mPrompt,
         storedValueIs,
-        suggest
+        suggest,
       } = meta.ask;
 
       const value = await this.stores[meta.store].get(meta);
@@ -151,7 +151,7 @@ export function Context(arg0: ContextArgs) {
           : suggest;
         const complete = keyPressAutoComplete(suggestList);
         Object.assign(prompt, {
-          keyPressers: [...prompt.keyPressers, complete]
+          keyPressers: [...prompt.keyPressers, complete],
         });
       }
 
@@ -160,7 +160,7 @@ export function Context(arg0: ContextArgs) {
         prompt: mPrompt ? mPrompt.replace("{variant}", variant) : "",
         footer: footer ? footer.replace("{variant}", variant) : "",
         default: value && storedValueIs === "default" ? value : mDefault,
-        maskInput
+        maskInput,
       };
       const answer = await prompt.start(thisPrompt);
       await this.set(prop, answer);
@@ -174,7 +174,7 @@ export function Context(arg0: ContextArgs) {
      * @param {*} value - The value of the property.
      * @returns {Promise} - The value of the property
      */
-    set: async function(prop: string, value: unknown) {
+    set: async function (prop: string, value: unknown) {
       const meta = getPropMeta(this.schema, prop);
       if (!this.stores[meta.store]) {
         throw StoreNotFoundError(meta.store);
@@ -189,7 +189,7 @@ export function Context(arg0: ContextArgs) {
      * @param {string} [variant="default"] - The name of the variant of this property type.
      * @returns {Promise} - The value of the property
      */
-    delete: async function(prop: string) {
+    delete: async function (prop: string) {
       const meta = getPropMeta(this.schema, prop);
       return this.stores[meta.store].delete(meta);
     },
@@ -200,7 +200,7 @@ export function Context(arg0: ContextArgs) {
      * @param {String} store - a store identifier
      * @returns {Object} store
      */
-    getStore: async function(store: string) {
+    getStore: async function (store: string) {
       return this.stores[store];
     },
 
@@ -209,7 +209,7 @@ export function Context(arg0: ContextArgs) {
      *
      * @returns {String[]} store identifiers
      */
-    listStores: async function() {
+    listStores: async function () {
       return Object.keys(this.stores);
     },
 
@@ -217,8 +217,8 @@ export function Context(arg0: ContextArgs) {
      * get the schema
      * @returns {Object} a copy of the schema plain object
      */
-    getSchema: function() {
+    getSchema: function () {
       return JSON.parse(JSON.stringify(this.schema));
-    }
+    },
   };
 }

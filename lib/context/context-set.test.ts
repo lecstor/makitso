@@ -16,7 +16,7 @@ describe("set", () => {
 
     result = await session.read();
     expect(result).toEqual({
-      github: { username: { default: "lecstor" } }
+      github: { username: { default: "lecstor" } },
     });
   });
 
@@ -30,13 +30,13 @@ describe("set", () => {
 
     // the result was saved to the store
     result = await session.get({
-      propertyPath: "github.username.work"
+      propertyPath: "github.username.work",
     });
     expect(result).toEqual("lecstor");
 
     result = await session.read();
     expect(result).toEqual({
-      github: { username: { work: "lecstor" } }
+      github: { username: { work: "lecstor" } },
     });
   });
 });

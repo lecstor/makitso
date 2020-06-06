@@ -2,7 +2,7 @@ import { MemoryStore } from "../memory-store";
 
 describe("Memory Store", () => {
   const store = new MemoryStore({
-    data: { github: { username: { default: "lecstor" } } }
+    data: { github: { username: { default: "lecstor" } } },
   });
   it("provides get", async () => {
     await expect(

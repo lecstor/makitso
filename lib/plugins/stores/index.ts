@@ -19,7 +19,7 @@ export async function plugin(args: PluginArgs) {
   const { session = { data: {} }, file } = args;
   const plugin: Plugin = {
     secure: new KeychainStore(),
-    session: new MemoryStore(session)
+    session: new MemoryStore(session),
   };
   if (file) {
     plugin.file = await new FileStore(file).load();

@@ -30,11 +30,11 @@ async function action({ context, input }: { context: Context; input: Input }) {
         write(`\n  ${cmdLine} - ${appCmd.description}\n`);
         if (appCmd.arguments && appCmd.arguments.length) {
           write("    Arguments:");
-          appCmd.arguments.forEach(arg => write(`      ${arg}`));
+          appCmd.arguments.forEach((arg) => write(`      ${arg}`));
         }
         if (appCmd.options && appCmd.options.length) {
           write("    Options:");
-          appCmd.options.forEach(opt => write(`      ${opt}`));
+          appCmd.options.forEach((opt) => write(`      ${opt}`));
         }
       }
     }
@@ -58,7 +58,7 @@ async function suggest({ context, input }: { context: Context; input: Input }) {
       return [];
     }
   }
-  return Object.keys(commands).filter(comm => comm !== "help");
+  return Object.keys(commands).filter((comm) => comm !== "help");
 }
 
 const commands = {
@@ -66,8 +66,8 @@ const commands = {
     description: "Get some help using this tool",
     arguments: ["[command...] - a command to get help with"],
     action,
-    suggest
-  }
+    suggest,
+  },
 };
 
 export function plugin() {

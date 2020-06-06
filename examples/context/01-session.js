@@ -16,18 +16,18 @@ const schema = {
       ask: {
         prompt: `Who will we say hi to? `,
         // Always prompts, using stored value as default when available
-        storedValueIs: "default"
-      }
+        storedValueIs: "default",
+      },
     },
     response: {
       store: "session",
       ask: {
         prompt: `Who will we say hi to? `,
         // Doesn't prompt if it has a stored value
-        storedValueIs: "response"
-      }
-    }
-  }
+        storedValueIs: "response",
+      },
+    },
+  },
 };
 
 const commands = {
@@ -36,15 +36,15 @@ const commands = {
     action: async ({ context, input }) => {
       const name = await context.get("hello.default");
       console.log(`Hello ${name}`);
-    }
+    },
   },
   hiResponse: {
     description: "Doesn't prompt if it has a stored value",
     action: async ({ context, input }) => {
       const name = await context.get("hello.response");
       console.log(`Hello ${name}`);
-    }
-  }
+    },
+  },
 };
 
 const myPlugin = { schema, commands };

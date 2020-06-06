@@ -18,7 +18,7 @@ type PropertyMeta = {
  * @returns {Array} The service and account values.
  */
 function replaceVariant(variant: string, ...values: string[]) {
-  return values.map(value => value.replace("{variant}", variant));
+  return values.map((value) => value.replace("{variant}", variant));
 }
 
 /**
@@ -56,7 +56,7 @@ export class KeychainStore implements Store {
     const [service, account] = extractProp({
       schemaPath,
       variant,
-      storeOptions
+      storeOptions,
     });
     return keytar.getPassword(service, account);
   }
@@ -99,7 +99,7 @@ export class KeychainStore implements Store {
 export function plugin() {
   return {
     stores: {
-      keychain: new KeychainStore()
-    }
+      keychain: new KeychainStore(),
+    },
   };
 }

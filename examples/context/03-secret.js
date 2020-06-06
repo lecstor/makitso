@@ -23,15 +23,15 @@ const schema = {
       store: "secure",
       storeOptions: {
         service: "my-remote-service",
-        account: "password"
+        account: "password",
       },
       ask: {
         prompt: `Enter your service password `,
         secret: true,
-        storedValueIs: "response"
-      }
-    }
-  }
+        storedValueIs: "response",
+      },
+    },
+  },
 };
 
 const commands = {
@@ -40,8 +40,8 @@ const commands = {
     action: async ({ context, input }) => {
       const password = await context.get("keep.secret");
       console.log(`shhh.. ${password}`);
-    }
-  }
+    },
+  },
 };
 
 const myPlugin = { schema, commands };

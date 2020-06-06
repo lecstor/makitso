@@ -70,7 +70,7 @@ export class MemoryStore implements Store {
 export function plugin(args: MemoryStoreArgs) {
   return {
     stores: {
-      session: new MemoryStore(args)
-    }
+      session: new MemoryStore(args),
+    },
   };
 }

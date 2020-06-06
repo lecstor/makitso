@@ -4,7 +4,7 @@ import { KeyPress, State } from "makitso-prompt";
 import { debug } from "../debug";
 
 function allMatch(suggests: string[], match: string) {
-  return _every(suggests, choice => choice.startsWith(match));
+  return _every(suggests, (choice) => choice.startsWith(match));
 }
 
 function findCommonPrefix(suggests: string[]) {
@@ -28,7 +28,7 @@ function completedCommandPortion(command: string) {
 }
 
 export function Autocomplete({
-  commandInfo
+  commandInfo,
 }: {
   commandInfo: (state: State) => Promise<void>;
 }) {

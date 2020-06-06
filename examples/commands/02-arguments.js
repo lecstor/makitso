@@ -12,7 +12,7 @@ const commands = {
       // define a positional argument with label and description
       "name - the person to say hi to",
       // the last argument can be [optional], or take multiple... values, or both
-      "[likes...] - things they like"
+      "[likes...] - things they like",
     ],
     action: async ({ context, input }) => {
       // input.args object contains the argument values
@@ -21,8 +21,8 @@ const commands = {
       if (likes) {
         console.log(`I hear you like ${likes.join(", ")}`);
       }
-    }
-  }
+    },
+  },
 };
 
 Makitso({ plugins: [{ commands }] }).catch(console.error);

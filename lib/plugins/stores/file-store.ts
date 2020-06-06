@@ -128,7 +128,7 @@ export async function plugin(args: FileStoreArgs) {
   const store = await new FileStore(args).load();
   return {
     stores: {
-      file: store
-    }
+      file: store,
+    },
   };
 }

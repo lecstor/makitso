@@ -18,18 +18,18 @@ const schema = {
       ask: {
         prompt: `Who will we say hi to? `,
         storedValueIs: "default",
-        suggest: ["John", "Sam", "Alexandria", "me"]
-      }
+        suggest: ["John", "Sam", "Alexandria", "me"],
+      },
     },
     dynamic: {
       store: "session",
       ask: {
         prompt: `Who will we say hi to? `,
         storedValueIs: "default",
-        suggest
-      }
-    }
-  }
+        suggest,
+      },
+    },
+  },
 };
 
 const commands = {
@@ -38,15 +38,15 @@ const commands = {
     action: async ({ context, input }) => {
       const name = await context.get("hello.static");
       console.log(`Hello ${name}`);
-    }
+    },
   },
   dynamicSuggest: {
     description: "Suggests answers from a function",
     action: async ({ context, input }) => {
       const name = await context.get("hello.dynamic");
       console.log(`Hello ${name}`);
-    }
-  }
+    },
+  },
 };
 
 const myPlugin = { schema, commands };

@@ -9,7 +9,7 @@ const commands = {
     description: "Says Hi",
     arguments: [
       "name - the person to say hi to",
-      "[likes...] - things they like"
+      "[likes...] - things they like",
     ],
     action: async ({ context, input }) => {
       const { name, likes } = input.args;
@@ -24,8 +24,8 @@ const commands = {
         return ["Cheesecake", "TV", "Puzzles"];
       }
       return [];
-    }
-  }
+    },
+  },
 };
 
 Makitso({ plugins: [{ commands }] }).catch(console.error);

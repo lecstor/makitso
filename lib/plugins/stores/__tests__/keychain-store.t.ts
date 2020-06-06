@@ -6,8 +6,8 @@ const prop = {
   schemaPath: "twitter.password",
   storeOptions: {
     service: "twitter.password",
-    account: "{variant}"
-  }
+    account: "{variant}",
+  },
 };
 
 describe("Keychain Store", () => {

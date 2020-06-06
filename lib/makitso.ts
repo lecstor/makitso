@@ -232,7 +232,7 @@ type MakitsoArgs = {
       message: string;
     };
   };
-  cmdLine: string;
+  cmdLine?: string;
 };
 
 export function Makitso(args: MakitsoArgs) {

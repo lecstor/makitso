@@ -4,11 +4,11 @@ import { Makitso } from "./makitso";
 
 const options = {
   app: {
-    description: "Makitso - tests"
+    description: "Makitso - tests",
   },
   prompt: {
-    message: "Test>"
-  }
+    message: "Test>",
+  },
 };
 
 const basicMockAction = jest.fn();
@@ -17,26 +17,26 @@ const testCommands = {
   basic: {
     arguments: ["one - first one", "two - second one", "three - third one"],
     options: ["-o --one another one", "-f --four fourth one"],
-    action: basicMockAction
+    action: basicMockAction,
   },
   multi: {
     arguments: ["one - first one", "multi... - multi"],
     options: ["--noalias no short alias", "-n no long alias"],
-    action: basicMockAction
+    action: basicMockAction,
   },
   optional: {
     arguments: ["one - first one", "[optional] - optional"],
-    action: basicMockAction
+    action: basicMockAction,
   },
   multiOptional: {
     arguments: ["one - first one", "[multiOpt...] - multi-optional"],
-    action: basicMockAction
+    action: basicMockAction,
   },
   quit: {
     action: async () => {
       throw new Error("quit");
-    }
-  }
+    },
+  },
 };
 
 function lastCalled(mock: jest.Mock) {
@@ -54,7 +54,7 @@ async function initMakitso({ command }: { command: string }) {
   return Makitso({
     options,
     plugins: { commands: testCommands },
-    commandPrompt: prompt
+    commandPrompt: prompt,
   });
 }
 
@@ -67,7 +67,7 @@ describe("Makitso", () => {
     expect(arg0.input).toEqual({
       args: { one: "Uno", three: "tre", two: "due" },
       unknownArgs: ["quattro"],
-      missing: []
+      missing: [],
     });
   });
 
@@ -79,7 +79,7 @@ describe("Makitso", () => {
     expect(arg0.input).toEqual({
       args: { multi: ["due", "tre", "quattro"], one: "Uno" },
       missing: [],
-      current: "multi"
+      current: "multi",
     });
   });
 
@@ -91,7 +91,7 @@ describe("Makitso", () => {
     expect(arg0.input).toEqual({
       args: { one: "Uno", optional: "due" },
       missing: [],
-      current: "optional"
+      current: "optional",
     });
   });
 
@@ -103,7 +103,7 @@ describe("Makitso", () => {
     expect(arg0.input).toEqual({
       args: { one: "Uno" },
       missing: [],
-      current: "one"
+      current: "one",
     });
   });
 
@@ -115,7 +115,7 @@ describe("Makitso", () => {
     expect(arg0.input).toEqual({
       args: { multiOpt: ["due", "tre"], one: "Uno" },
       missing: [],
-      current: "multiOpt"
+      current: "multiOpt",
     });
   });
 
@@ -127,7 +127,7 @@ describe("Makitso", () => {
     expect(arg0.input).toEqual({
       args: { one: "Uno" },
       missing: [],
-      current: "one"
+      current: "one",
     });
   });
 
@@ -143,31 +143,31 @@ describe("Makitso", () => {
           isMulti: false,
           isOptional: false,
           name: "one",
-          string: "one - first one"
+          string: "one - first one",
         },
         {
           description: "- second one",
           isMulti: false,
           isOptional: false,
           name: "two",
-          string: "two - second one"
+          string: "two - second one",
         },
         {
           description: "- third one",
           isMulti: false,
           isOptional: false,
           name: "three",
-          string: "three - third one"
-        }
+          string: "three - third one",
+        },
       ],
       unknownOpts: [{ three: ["tre"] }],
-      current: "one"
+      current: "one",
     });
   });
 
   it("removes options that shadow positional args", async () => {
     await initMakitso({
-      command: "basic Uno due tre -o UnoDue --one UnoDueDue -f quattro"
+      command: "basic Uno due tre -o UnoDue --one UnoDueDue -f quattro",
     });
 
     const arg0 = lastCalled(basicMockAction);
@@ -177,11 +177,11 @@ describe("Makitso", () => {
         four: ["quattro"],
         one: "Uno",
         three: "tre",
-        two: "due"
+        two: "due",
       },
       unknownOpts: [{ o: ["UnoDue"] }, { one: ["UnoDueDue"] }],
       missing: [],
-      current: "three"
+      current: "three",
     });
   });
 });
